@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To 腳寶</title>
+    <title>給最愛的你</title>
     <!-- 建議：將圖示上傳到 Imgur 或 GitHub 專案資料夾中，然後使用直接連結 -->
     <link rel="apple-touch-icon" href="https://placehold.co/180x180/0d1b2a/e0e1dd?text=ICON">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,14 +17,17 @@
             background-color: #0d1b2a; /* 深邃星空藍 */
             color: #e0e1dd;
         }
-        #landing-page {
+        #landing-page, #surprise-container {
+            display: none; /* Initially hidden */
+        }
+        #password-gate {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('https://placehold.co/1920x180/0d1b2a/e0e1dd?text=我們的故事') no-repeat center center;
-            background-size: cover;
+            background-color: #0d1b2a;
+            transition: opacity 0.5s ease-out;
         }
         .day-card {
             background-color: #1b263b; /* 較淺的藍灰色 */
@@ -70,6 +73,17 @@
     </style>
 </head>
 <body>
+    
+    <!-- Password Gate -->
+    <div id="password-gate">
+        <div class="w-full max-w-xs p-8 bg-gray-800 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold text-center accent-color mb-6">請輸入密碼</h2>
+            <input type="password" id="password-input" class="w-full p-3 bg-gray-700 rounded text-white text-center text-lg tracking-widest">
+            <button id="password-submit" class="w-full accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded mt-4">進入</button>
+            <p id="password-error" class="text-red-400 text-center mt-4 h-4"></p>
+        </div>
+    </div>
+
 
     <!-- Landing Page -->
     <div id="landing-page">
@@ -123,6 +137,11 @@
 
 
     <script>
+        // --- 密碼設定 ---
+        // 請在這裡修改成你想設定的密碼
+        const PASSWORD = 'chen0927';
+        // --- 設定結束 ---
+
         // --- 開發設定 ---
         // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
         // 正式發佈給對方前，請務必改回 false！
