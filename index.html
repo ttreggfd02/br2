@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>給最愛的你</title>
-    <!-- 
-      建議：將圖示上傳到你的 GitHub 專案資料夾中，然後使用相對路徑。
-      例如：<link rel="apple-touch-icon" href="/assets/icon.png">
-      我暫時先將有問題的 Google Drive 連結移除了。
-    -->
+    <!-- 建議：將圖示上傳到 Imgur 或 GitHub 專案資料夾中，然後使用直接連結 -->
+    <link rel="apple-touch-icon" href="https://placehold.co/180x180/0d1b2a/e0e1dd?text=ICON">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -26,7 +23,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('https://placehold.co/1920x1080/0d1b2a/e0e1dd?text=我們的故事') no-repeat center center;
+            background: linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('https://placehold.co/1920x180/0d1b2a/e0e1dd?text=我們的故事') no-repeat center center;
             background-size: cover;
         }
         .day-card {
@@ -50,11 +47,11 @@
         .modal .close-button { color: #aaa; position: absolute; top: 1rem; right: 1.5rem; font-size: 28px; font-weight: bold; cursor: pointer; }
         .modal .close-button:hover, .modal .close-button:focus { color: white; }
 
-        #birthday-title, #personal-message, #monday-title, #monday-content-wrapper {
+        #birthday-title, #personal-message, #monday-title, #monday-content {
             transition: opacity 1.5s ease-in-out;
         }
         #fireworks-canvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 51; pointer-events: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 51;
         }
         #birthday-title, #personal-message, #monday-title, #monday-content-wrapper {
             position: absolute;
@@ -70,52 +67,9 @@
         #spot-the-diff-container { position: relative; display: inline-block; }
         .diff-circle { position: absolute; /* border: 2px solid red; */ border-radius: 50%; cursor: pointer; box-sizing: border-box; }
         .diff-circle.found { background-color: rgba(0, 255, 0, 0.4); border: 2px solid limegreen; }
-        .puzzle-piece {
-            width: 150px;
-            height: 150px;
-            background-image: url('https://placehold.co/300x300/e0b1cb/0d1b2a?text=回憶');
-            background-size: 300px 300px;
-            display: inline-block;
-            border: 1px solid #fff;
-            cursor: pointer;
-        }
-        .puzzle-piece.selected {
-            border: 2px solid #fde047; /* yellow-400 */
-        }
-        #puzzle-container {
-            display: grid;
-            grid-template-columns: repeat(2, 150px);
-            gap: 2px;
-            justify-content: center;
-        }
-        #scratch-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            margin: auto;
-            cursor: crosshair;
-        }
-        #scratch-prize {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #1b263b;
-            color: #e0e1dd;
-            border-radius: 8px;
-        }
-        #scratch-card {
-            position: relative;
-            z-index: 10;
-            display: block;
-        }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
     <!-- Landing Page -->
     <div id="landing-page">
@@ -141,7 +95,7 @@
     </div>
 
     <!-- Fireworks container -->
-    <div id="fireworks-container" class="hidden fixed top-0 left-0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
+    <div id="fireworks-container" class="hidden fixed top-0 left:0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
         <canvas id="fireworks-canvas"></canvas>
         <div id="birthday-title" class="px-4">
             <h1 class="text-white text-4xl md:text-6xl font-bold" style="text-shadow: 0 0 20px #e0e1dd;">生日快樂！</h1>
@@ -157,7 +111,7 @@
     </div>
     
     <!-- Monday Motivation Container -->
-    <div id="monday-motivation-container" class="hidden fixed top-0 left-0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
+    <div id="monday-motivation-container" class="hidden fixed top-0 left:0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
         <span class="close-button absolute top-8 right-8 text-2xl">&times;</span>
         <div id="monday-title" class="px-4">
             <h1 class="text-white text-4xl md:text-6xl font-bold" style="text-shadow: 0 0 20px #a0c4ff;"></h1>
@@ -169,6 +123,12 @@
 
 
     <script>
+        // --- 開發設定 ---
+        // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
+        // 正式發佈給對方前，請務必改回 false！
+        const UNLOCK_ALL_DATES = true;
+        // --- 設定結束 ---
+
         const surprises = {
             1: { 
                 title: "歡迎來到你的驚喜月！", 
@@ -184,14 +144,13 @@
                 title: "地點大考驗",
                 content: `
                     <h3 class="text-2xl font-bold accent-color mb-4">猜猜這是哪裡？</h3>
-                    <img id="blurred-image" src="https://placehold.co/600x400/1b263b/e0e1dd?text=我們的第一次約會" alt="模糊的照片" class="w-full rounded-lg mb-4 cursor-pointer" style="filter: blur(8px);">
+                    <img id="blurred-image" src="https://placehold.co/600x400/1b263b/e0e1dd?text=?" alt="模糊的照片" class="w-full rounded-lg mb-4 cursor-pointer" style="filter: blur(8px);">
                     <p class="text-center">（點擊圖片揭曉答案）</p>
                 `,
                 gameInit: () => {
                     const img = document.getElementById('blurred-image');
                     img.addEventListener('click', () => {
                         img.style.filter = 'blur(0)';
-                        img.src = "https://placehold.co/600x400/e0b1cb/0d1b2a?text=是這裡！";
                     }, { once: true });
                 }
             },
@@ -228,12 +187,11 @@
             },
             7: {
                 title: "我們的故事片段",
-                content: `<h3 class="text-2xl font-bold accent-color mb-4">這個片段，讓我想起...</h3><p>每次看到這個片段，都會想起我們一起大笑的日子。</p><div class="aspect-w-16 aspect-h-9 mt-4"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full rounded-lg"></iframe></div>`
+                content: `<h3 class="text-2xl font-bold accent-color mb-4">這個片段，讓我想起...</h3><p>每次看到這個片段，都會想起我們一起大笑的日子。</p><div class="aspect-w-16 aspect-h-9 mt-4"><iframe src="https://www.youtube.com/embed/An_r_t_c2sU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full rounded-lg"></iframe></div>`
             },
             8: {
                 title: "週一能量補給",
                 type: 'monday',
-                openingTitle: '新的一週，加油！',
                 content: `<h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯熱拿鐵</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-mug-hot text-6xl text-amber-200 mb-4"></i><p class="text-xl">它會在你最需要的時候，給你溫暖和力量。祝你新的一週充滿能量！</p><hr class="my-4 border-gray-600"><p>本週挑戰預告：「回憶復刻挑戰」，我們可以先來找找要復刻哪張照片喔！</p></div>`
             },
             9: {
@@ -528,11 +486,13 @@
             const mondayContentWrapper = document.getElementById('monday-content-wrapper');
             const mondayCloseButton = document.querySelector('#monday-motivation-container .close-button');
             
-            // 為了方便展示，將日期設定為 9 月 30 日，解鎖所有卡片
-            const today = new Date();
-            // 實際使用時請用下面這行
-            // const today = new Date(); 
+            // --- 開發設定 ---
+            // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
+            // 正式發佈給對方前，請務必改回 false！
+            const UNLOCK_ALL_DATES = true;
+            // --- 設定結束 ---
 
+            const today = new Date();
             const currentMonth = today.getMonth();
             const currentDay = today.getDate();
             
@@ -580,7 +540,7 @@
                 card.appendChild(monthText);
 
                 // 判斷是否解鎖
-                if (currentMonth === 8 && day <= currentDay) { // 8 代表 9 月 (月份從 0 開始)
+                if (UNLOCK_ALL_DATES || (currentMonth === 8 && day <= currentDay)) { // 8 代表 9 月 (月份從 0 開始)
                     card.classList.add('unlocked');
                     card.addEventListener('click', () => openSurprise(day));
                 } else {
