@@ -17,7 +17,16 @@
             background-color: #0d1b2a; /* 深邃星空藍 */
             color: #e0e1dd;
         }
-        #landing-page, #surprise-container {
+        #landing-page {
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('https://placehold.co/1920x180/0d1b2a/e0e1dd?text=我們的故事') no-repeat center center;
+            background-size: cover;
+        }
+        #surprise-container {
             display: none; /* Initially hidden */
         }
         #password-gate {
