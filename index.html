@@ -156,6 +156,51 @@
             color: #1f2937;
             transform: rotateX(180deg);
         }
+
+        /* Fortune Cookie Style */
+        #fortune-cookie.cracking {
+            animation: crack 0.8s ease-in-out forwards;
+        }
+        @keyframes crack {
+            0% { transform: scale(1); opacity: 1; }
+            20% { transform: translateX(-5px) rotate(-5deg); }
+            40% { transform: translateX(5px) rotate(5deg); }
+            60% { transform: translateX(-5px) rotate(-5deg); }
+            80% { transform: translateX(5px) rotate(5deg); }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        /* Scratch Card styles */
+        #scratch-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100px;
+            margin: auto;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        #scratch-prize {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #415a77;
+            color: #e0e1dd;
+        }
+        #scratch-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
@@ -258,9 +303,17 @@
                 day25_map: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡地圖',
                 day28_photo: 'https://placehold.co/600x400/1b263b/e0e1dd?text=一年前的照片',
                 day30_memory: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡回憶',
-                giftBox: 'image/IMG_7617.jpeg' // <-- 已將副檔名修正為 .jpeg
+                giftBox: 'image/IMG_7617.jpeg'
             };
             // --- 圖片路徑結束 ---
+            
+            // --- 連結管理 ---
+            const linkPaths = {
+                day19_video: 'https://www.youtube.com/embed/An_r_t_c2sU',
+                day7_spotify: 'https://open.spotify.com/playlist/4cIIUR6AHQsudqNdhOfQN2?si=i04RwpqoSXqXqRdjIf1tyg&pi=CXbAyX0zT-6J6',
+                day26_spotify: 'https://open.spotify.com/'
+            };
+            // --- 連結管理結束 ---
 
             const surprises = {
                 1: { 
@@ -301,50 +354,14 @@
                     }
                 },
                 3: {
-                    title: "無條件誇誇卡",
-                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">無條件誇誇卡</h4><p class="text-lg mb-6">當你需要信心時，請使用此卡。我會立刻化身你的頭號粉絲，在三分鐘内不斷地稱讚你！</p></div>`
+                    title: "癢癢抓抓卷",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">癢癢抓抓卷</h4><p class="text-lg mb-6">當你覺得背很癢又抓不到時，此券可召喚「不求人」幫你抓到癢！</p></div>`
                 },
                 4: {
                     title: "勇者任務卡 #1",
                     content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">街頭藝術家挑戰</h4><p>任務：找一個下午，我們一起去買畫冊和色筆，在公園裡為對方畫一幅肖像畫。</p><hr class="my-2 border-gray-600"><p><strong>獎勵：</strong>任務完成後，我會把你的「大作」裱框起來，並請你喝一杯你最愛的手搖飲！</p></div>`
                 },
                 5: {
-                    title: "深夜食堂指定卷",
-                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">深夜食堂指定卷</h4><p class="text-lg mb-6">不管多晚，只要你想吃宵夜，憑此券可指定一樣我能做出來的料理！</p></div>`
-                },
-                6: {
-                    title: "今日運勢小餅乾",
-                    content: `
-                        <h3 class="text-2xl font-bold accent-color mb-4 text-center">打開今天的幸運</h3>
-                        <div id="fortune-cookie" class="text-center cursor-pointer">
-                            <i class="fas fa-cookie-bite text-9xl text-yellow-200"></i>
-                            <p class="mt-4">（點我打開）</p>
-                        </div>
-                        <div id="fortune-text" class="hidden text-center p-4 bg-gray-800 rounded-lg mt-4">
-                            <p class="text-xl">「今日宜：緊緊抱住身邊的人，會獲得意想不到的能量。」</p>
-                        </div>
-                    `,
-                    gameInit: () => {
-                        document.getElementById('fortune-cookie').addEventListener('click', () => {
-                            document.getElementById('fortune-cookie').classList.add('hidden');
-                            document.getElementById('fortune-text').classList.remove('hidden');
-                        });
-                    }
-                },
-                7: {
-                    title: "我們的故事片段",
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">這個片段，讓我想起...</h3><p>每次看到這個片段，都會想起我們一起大笑的日子。</p><div class="aspect-w-16 aspect-h-9 mt-4"><iframe src="https://www.youtube.com/embed/An_r_t_c2sU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full rounded-lg"></iframe></div>`
-                },
-                8: {
-                    title: "週一能量補給",
-                    type: 'monday',
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯熱拿鐵</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-mug-hot text-6xl text-amber-200 mb-4"></i><p class="text-xl">它會在你最需要的時候，給你溫暖和力量。祝你新的一週充滿能量！</p><hr class="my-4 border-gray-600"><p>本週挑戰預告：「回憶復刻挑戰」，我們可以先來找找要復刻哪張照片喔！</p></div>`
-                },
-                9: {
-                    title: "氣噗噗消氣卡",
-                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">氣噗噗消氣卡</h4><p class="text-lg mb-6">當你生氣時，出示此卡，我會立刻停止爭辯，並給你一個大大的擁抱讓你消氣。</p></div>`
-                },
-                10: {
                     title: "未來藍圖產生器",
                     content: `
                         <h3 class="text-2xl font-bold accent-color mb-4 text-center">來填寫我們的未來藍圖！</h3>
@@ -368,6 +385,51 @@
                             });
                         });
                     }
+                },
+                6: {
+                    title: "今日運勢小餅乾",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4 text-center">打開今天的幸運</h3>
+                        <div id="fortune-cookie" class="text-center cursor-pointer">
+                            <i class="fas fa-cookie-bite text-9xl text-yellow-200"></i>
+                            <p class="mt-4">（點我打開）</p>
+                        </div>
+                        <div id="fortune-text" class="hidden text-center p-4 bg-gray-800 rounded-lg mt-4">
+                            <p class="text-xl">「今日宜：緊緊抱住身邊的人，會獲得意想不到的能量。」</p>
+                        </div>
+                    `,
+                    gameInit: () => {
+                        const cookie = document.getElementById('fortune-cookie');
+                        const fortuneText = document.getElementById('fortune-text');
+                        cookie.addEventListener('click', () => {
+                            cookie.classList.add('cracking');
+                            setTimeout(() => {
+                                cookie.style.display = 'none';
+                                fortuneText.classList.remove('hidden');
+                            }, 800);
+                        }, { once: true });
+                    }
+                },
+                7: {
+                    title: "我們的故事歌單",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">這首歌，讓我想起...</h3>
+                        <p class="mb-4">我把我們的故事，放進了這張歌單裡。點開來聽聽，看你會先想起哪一段回憶？</p>
+                        <a href="${linkPaths.day7_spotify}" target="_blank" class="block accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded text-center">點我播放故事歌單 <i class="fab fa-spotify ml-2"></i></a>
+                    `
+                },
+                8: {
+                    title: "週一能量補給",
+                    type: 'monday',
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯熱拿鐵</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-mug-hot text-6xl text-amber-200 mb-4"></i><p class="text-xl">它會在你最需要的時候，給你溫暖和力量。祝你新的一週充滿能量！</p><hr class="my-4 border-gray-600"><p>本週挑戰預告：「回憶復刻挑戰」，我們可以先來找找要復刻哪張照片喔！</p></div>`
+                },
+                9: {
+                    title: "氣噗噗消氣卡",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">氣噗噗消氣卡</h4><p class="text-lg mb-6">當你生氣時，出示此卡，我會立刻停止爭辯，並給你一個大大的擁抱讓你消氣。</p></div>`
+                },
+                10: {
+                    title: "深夜食堂指定卷",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">深夜食堂指定卷</h4><p class="text-lg mb-6">不管多晚，只要你想吃宵夜，憑此券可指定一樣我能做出來的料理！</p></div>`
                 },
                 11: {
                     title: "大家來找碴",
@@ -419,8 +481,8 @@
                     }
                 },
                 12: {
-                    title: "癢癢抓抓卷",
-                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">癢癢抓抓卷</h4><p class="text-lg mb-6">當你覺得背很癢又抓不到時，此券可召喚「不求人」幫你抓到癢！</p></div>`
+                    title: "無條件誇誇卡",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">無條件誇誇卡</h4><p class="text-lg mb-6">當你需要信心時，請使用此卡。我會立刻化身你的頭號粉絲，在三分鐘内不斷地稱讚你！</p></div>`
                 },
                 13: {
                     title: "命運硬幣",
@@ -558,10 +620,9 @@
                     gameInit: () => {
                         const canvas = document.getElementById('scratch-card');
                         const container = document.getElementById('scratch-container');
-                        const prize = document.getElementById('scratch-prize');
                         
                         canvas.width = container.clientWidth;
-                        canvas.height = prize.clientHeight;
+                        canvas.height = container.clientHeight;
 
                         const ctx = canvas.getContext('2d');
                         ctx.fillStyle = '#778da9';
@@ -589,12 +650,8 @@
                     }
                 },
                 19: {
-                    title: "我們的故事歌單",
-                    content: `
-                        <h3 class="text-2xl font-bold accent-color mb-4">這首歌，讓我想起...</h3>
-                        <p class="mb-4">我把我們的故事，放進了這張歌單裡。點開來聽聽，看你會先想起哪一段回憶？</p>
-                        <a href="https://open.spotify.com/" target="_blank" class="block accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded text-center">點我播放故事歌單 <i class="fab fa-spotify ml-2"></i></a>
-                    `
+                    title: "我們的故事片段",
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">這個片段，讓我想起...</h3><p>每次看到這個片段，都會想起我們一起大笑的日子。</p><div class="aspect-w-16 aspect-h-9 mt-4"><iframe src="${linkPaths.day19_video}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full rounded-lg"></iframe></div>`
                 },
                 20: {
                     title: "勇者任務卡 #3",
@@ -627,7 +684,7 @@
                     content: `
                         <h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 2</h3>
                         <p class="mb-4">我為這次的旅行，偷偷準備了一張專屬歌單。戴上耳機，讓我們在同樣的旋律裡，創造獨一無二的回憶吧！</p>
-                        <a href="https://open.spotify.com/" target="_blank" class="block accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded text-center">點我播放福岡專屬歌單 <i class="fab fa-spotify ml-2"></i></a>
+                        <a href="${linkPaths.day26_spotify}" target="_blank" class="block accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded text-center">點我播放福岡專屬歌單 <i class="fab fa-spotify ml-2"></i></a>
                     `
                 },
                 27: { title: "生日快樂！", type: 'fireworks' },
@@ -782,8 +839,7 @@
                     modalBody.innerHTML = `<h2 class="text-3xl font-bold text-white mb-6 border-b-2" style="border-color: #778da9;">${surprise.title}</h2><div>${surprise.content}</div>`;
                     modal.style.display = 'block';
                     if (surprise.gameInit) {
-                        // 延遲一點執行，確保 DOM 已經渲染
-                        setTimeout(surprise.gameInit, 100);
+                        surprise.gameInit();
                     }
                 }
             }
