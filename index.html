@@ -23,8 +23,6 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('https://placehold.co/1920x1080/0d1b2a/e0e1dd?text=我們的故事') no-repeat center center;
-            background-size: cover;
         }
         #surprise-container {
             display: none; /* Initially hidden */
@@ -103,9 +101,9 @@
             animation: glow 1.5s ease-in-out forwards;
         }
         @keyframes glow {
-            0% { transform: scale(1.1); filter: drop-shadow(0 0 5px #fff); }
-            50% { transform: scale(1.2); filter: drop-shadow(0 0 25px #fff) drop-shadow(0 0 50px #e0b1cb); }
-            100% { transform: scale(1.1); filter: drop-shadow(0 0 5px #fff); opacity: 0; }
+            0% { transform: scale(1.1); filter: drop-shadow(0 0 5px #fff); opacity: 1; }
+            50% { transform: scale(1.2); filter: drop-shadow(0 0 25px #fff) drop-shadow(0 0 50px #e0b1cb); opacity: 1; }
+            100% { transform: scale(0); filter: drop-shadow(0 0 5px #fff); opacity: 0; }
         }
         #gift-result {
             opacity: 0;
@@ -216,8 +214,7 @@
                 day25_map: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡地圖',
                 day28_photo: 'https://placehold.co/600x400/1b263b/e0e1dd?text=一年前的照片',
                 day30_memory: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡回憶',
-                giftBox: 'image/IMG_7616.jpeg',
-                giftBoxOpen: 'image/IMG_7621.png' // <--- 新增打開的禮物箱圖片
+                giftBox: 'image/IMG_7616.jpeg' // <-- 禮物箱圖片路徑
             };
             // --- 圖片路徑結束 ---
 
@@ -549,7 +546,7 @@
                 },
                 25: {
                     title: "行前預告：我們的冒險地圖",
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 1</h3><p>我們的冒險即將啟程！猜猜看，我最期待的行程是哪一個？</p><img src="https://placehold.co/600x400/1b263b/e0e1dd?text=福岡地圖" class="w-full rounded-lg mt-4">`
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 1</h3><p>我們的冒險即將啟程！猜猜看，我最期待的行程是哪一個？</p><img src="${imagePaths.day25_map}" class="w-full rounded-lg mt-4">`
                 },
                 26: {
                     title: "我們的福岡進行曲",
@@ -562,7 +559,7 @@
                 27: { title: "生日快樂！", type: 'fireworks' },
                 28: {
                     title: "一年前的今天",
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 4</h3><div class="p-4 text-center"><img src="https://placehold.co/600x400/1b263b/e0e1dd?text=一年前的照片" class="w-full rounded-lg mb-4"><p class="text-xl leading-relaxed">「一年前的今天，我們正在為了要去哪裡玩而煩惱。一年後的今天，我們真的在福岡了！」</p></div>`
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 4</h3><div class="p-4 text-center"><img src="${imagePaths.day28_photo}" class="w-full rounded-lg mb-4"><p class="text-xl leading-relaxed">「一年前的今天，我們正在為了要去哪裡玩而煩惱。一年後的今天，我們真的在福岡了！」</p></div>`
                 },
                 29: {
                     title: "旅行中的指定任務",
@@ -570,7 +567,7 @@
                 },
                 30: { 
                     title: "福岡回憶錄", 
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 6</h3><div class="w-full h-64 bg-gray-800 rounded-lg flex items-center justify-center mb-4"><p>把我們最喜歡的福岡合照放在這裡吧！</p></div><p>這趟旅程因為你而完美。我們的故事，未完待續... 親愛的，下一站你想去哪？</p>`
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 6</h3><div class="w-full h-64 bg-gray-800 rounded-lg flex items-center justify-center mb-4"><img src="${imagePaths.day30_memory}" class="max-w-full max-h-full rounded-lg"></div><p>這趟旅程因為你而完美。我們的故事，未完待續... 親愛的，下一站你想去哪？</p>`
                 }
             };
 
@@ -598,12 +595,13 @@
             const giftResult = document.getElementById('gift-result');
             const giftCloseButton = document.querySelector('#gift-reveal-container .close-button');
             const giftBoxImage = document.querySelector('#gift-box img');
-
+            
             // --- Apply Image Paths ---
             document.getElementById('landing-page').style.backgroundImage = `linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('${imagePaths.landingBackground}')`;
-            giftBoxImage.src = imagePaths.giftBox;
+            if (giftBoxImage) {
+                 giftBoxImage.src = imagePaths.giftBox;
+            }
 
-            
             const today = new Date();
             const currentMonth = today.getMonth();
             const currentDay = today.getDate();
@@ -717,7 +715,6 @@
             }
             
             function showGiftReveal(surprise) {
-                giftBoxImage.src = imagePaths.giftBox; // Reset to closed box
                 giftResult.innerHTML = surprise.content;
                 giftResult.classList.remove('visible');
                 giftBox.classList.remove('open');
@@ -725,7 +722,6 @@
                 giftContainer.style.display = 'flex';
 
                 const openGiftHandler = () => {
-                    giftBoxImage.src = imagePaths.giftBoxOpen; // Change to open box
                     giftBox.classList.add('open');
                     setTimeout(() => {
                         giftBox.style.display = 'none';
