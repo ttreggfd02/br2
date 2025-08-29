@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>給最愛的你</title>
+    <!-- 建議：將圖示上傳到 Imgur 或 GitHub 專案資料夾中，然後使用直接連結 -->
     <link rel="apple-touch-icon" href="image/icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
@@ -22,7 +23,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('https://placehold.co/1920x180/0d1b2a/e0e1dd?text=我們的故事') no-repeat center center;
+            background: linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('https://placehold.co/1920x1080/0d1b2a/e0e1dd?text=我們的故事') no-repeat center center;
             background-size: cover;
         }
         #surprise-container {
@@ -79,29 +80,6 @@
         .diff-circle { position: absolute; /* border: 2px solid red; */ border-radius: 50%; cursor: pointer; box-sizing: border-box; }
         .diff-circle.found { background-color: rgba(0, 255, 0, 0.4); border: 2px solid limegreen; }
 
-        /* Puzzle Game Styles */
-        #puzzle-container {
-            display: grid;
-            grid-template-columns: repeat(2, 150px);
-            grid-template-rows: repeat(2, 150px);
-            gap: 5px;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-        .puzzle-piece {
-            width: 150px;
-            height: 150px;
-            background-size: 300px 300px;
-            cursor: pointer;
-            border: 1px solid #778da9;
-            transition: transform 0.2s ease;
-        }
-        .puzzle-piece.selected {
-            border: 2px solid #e0b1cb;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px #e0b1cb;
-        }
-
         /* Gift Reveal Styles */
         #gift-reveal-container {
             display: none;
@@ -140,6 +118,7 @@
 </head>
 <body>
     
+    <!-- Password Gate -->
     <div id="password-gate">
         <div class="w-full max-w-xs p-8 bg-gray-800 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold text-center accent-color mb-6">請輸入密碼</h2>
@@ -150,6 +129,7 @@
     </div>
 
 
+    <!-- Landing Page -->
     <div id="landing-page">
         <h1 class="text-4xl md:text-7xl font-bold text-white mb-6 text-center animate-pulse">給我的最愛</h1>
         <p class="text-xl md:text-2xl text-gray-300 mb-12 text-center">九月的每一天，都為你準備了一個小秘密</p>
@@ -158,18 +138,21 @@
         </button>
     </div>
 
+    <!-- Surprises Calendar -->
     <div id="surprise-container" class="hidden p-4 md:p-8">
         <h2 class="text-3xl md:text-5xl font-bold accent-color mb-8 text-center">九月驚喜日曆</h2>
         <div id="calendar-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 max-w-6xl mx-auto"></div>
     </div>
 
+    <!-- Modal for Daily Surprise -->
     <div id="surprise-modal" class="modal">
         <div class="modal-content">
-            <span class="close-button">×</span>
+            <span class="close-button">&times;</span>
             <div id="modal-body"></div>
         </div>
     </div>
 
+    <!-- Fireworks container -->
     <div id="fireworks-container" class="hidden fixed top-0 left:0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
         <canvas id="fireworks-canvas"></canvas>
         <div id="birthday-title" class="px-4">
@@ -185,141 +168,411 @@
         </div>
     </div>
     
+    <!-- Monday Motivation Container -->
     <div id="monday-motivation-container" class="hidden fixed top-0 left:0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
-        <span class="close-button absolute top-8 right-8 text-2xl">×</span>
+        <span class="close-button absolute top-8 right-8 text-2xl">&times;</span>
         <div id="monday-title" class="px-4">
             <h1 class="text-white text-4xl md:text-6xl font-bold" style="text-shadow: 0 0 20px #a0c4ff;"></h1>
         </div>
         <div id="monday-content-wrapper" class="px-4 opacity-0 w-full max-w-3xl">
-            </div>
+            <!-- Monday content will be injected here -->
+        </div>
     </div>
     
+    <!-- Gift Reveal Container -->
     <div id="gift-reveal-container">
-         <span class="close-button absolute top-8 right-8 text-2xl">×</span>
+         <span class="close-button absolute top-8 right-8 text-2xl">&times;</span>
          <div id="gift-box">
-             <img src="" alt="禮物箱" class="w-48 h-48">
+             <img src="https://placehold.co/200x200/e0b1cb/0d1b2a?text=Gift" alt="禮物箱" class="w-48 h-48">
              <p class="text-center mt-4 text-lg animate-pulse">點我打開</p>
          </div>
          <div id="gift-result" class="text-center">
-            </div>
+            <!-- Gift result will be injected here -->
+         </div>
     </div>
 
 
     <script>
-        // --- 圖片路徑設定 ---
-        const imagePaths = {
-            icon: 'image/icon.png',
-            landingBackground: 'https://placehold.co/1920x180/0d1b2a/e0e1dd?text=我們的故事',
-            blurredImage: 'image/IMG_7615.jpeg',
-            puzzleImage: 'image/IMG_7615.jpeg', // 拼圖遊戲使用的圖片
-            giftBox: 'image/IMG_7616.jpeg',
-            fukuokaMap: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡地圖',
-            oneYearAgo: 'https://placehold.co/600x400/1b263b/e0e1dd?text=一年前的照片'
-        };
-        // --- 設定結束 ---
-
-        // --- 密碼設定 ---
-        const PASSWORD = 'chen0927';
-        // --- 設定結束 ---
-
-        // --- 開發設定 ---
-        const UNLOCK_ALL_DATES = true;
-        // --- 設定結束 ---
-
-        const surprises = {
-            1: { 
-                title: "歡迎來到你的驚喜月！",
-                content: `
-                    <h3 class="text-2xl font-bold accent-color mb-4">給我的壽星：</h3>
-                    <p class="text-lg">歡迎來到這個專屬於你的生日驚喜月！從今天起，這裡每天都會有一個小秘密，可能是我們的回憶、有趣的小遊戲，或是可以兌現的真實禮物。準備好，讓我們一起倒數吧！</p>
-                    <button id="claim-gift-btn" class="mt-6 w-full accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded">領取第一份禮物</button>
-                `,
-                gameInit: () => {
-                    document.getElementById('claim-gift-btn').addEventListener('click', () => {
-                        const modal = document.getElementById('surprise-modal');
-                        modal.style.display = 'none';
-                        showGiftReveal(surprises['1-gift']);
-                    });
-                }
-            },
-            '1-gift': {
-                type: 'gift',
-                content: `
-                    <h3 class="text-2xl font-bold accent-color mb-4">恭喜你獲得：</h3>
-                    <p class="text-4xl font-bold my-4">Fujifilm X-M5</p>
-                    <p>希望你喜歡這份禮物，用它來記錄我們未來更多的美好瞬間！</p>
-                `
-            },
-            2: {
-                title: "地點大考驗",
-                content: `
-                    <h3 class="text-2xl font-bold accent-color mb-4">猜猜這是哪裡？</h3>
-                    <img id="blurred-image" src="${imagePaths.blurredImage}" alt="模糊的照片" class="w-full rounded-lg mb-4 cursor-pointer" style="filter: blur(8px);">
-                    <p class="text-center">（點擊圖片揭曉答案）</p>
-                `,
-                gameInit: () => {
-                    const img = document.getElementById('blurred-image');
-                    img.addEventListener('click', () => {
-                        img.style.filter = 'blur(0)';
-                    }, { once: true });
-                }
-            },
-            // ... (其他日期的驚喜內容保持不變) ...
-            17: {
-                title: "記憶拼圖",
-                content: `
-                    <h3 class="text-2xl font-bold accent-color mb-4">拼湊我們的回憶</h3>
-                    <div id="puzzle-container"></div>
-                    <p id="puzzle-win" class="text-center mt-4 hidden text-xl accent-color">完成了！我們的回憶，一塊都不能少。</p>
-                `,
-                gameInit: () => {
-                    // ... (拼圖遊戲的 JS 邏輯) ...
-                    // 在 createPieces 函數中設定背景圖片
-                    const createPieces = () => {
-                        container.innerHTML = '';
-                        pieces = [];
-                        for (let i = 0; i < 4; i++) {
-                            const piece = document.createElement('div');
-                            piece.classList.add('puzzle-piece');
-                            // 設定背景圖片
-                            piece.style.backgroundImage = `url('${imagePaths.puzzleImage}')`; 
-                            const originalIndex = currentOrder[i];
-                            const row = Math.floor(originalIndex / 2);
-                            const col = originalIndex % 2;
-                            piece.style.backgroundPosition = `${-col * 150}px ${-row * 150}px`;
-                            piece.dataset.index = i;
-                            piece.addEventListener('click', onPieceClick);
-                            container.appendChild(piece);
-                            pieces.push(piece);
-                        }
-                    };
-                     // ... (其他拼圖邏輯) ...
-                }
-            },
-            // ... (其他日期的驚喜內容) ...
-            25: {
-                title: "行前預告：我們的冒險地圖",
-                content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 1</h3><p>我們的冒險即將啟程！猜猜看，我最期待的行程是哪一個？</p><img src="${imagePaths.fukuokaMap}" class="w-full rounded-lg mt-4">`
-            },
-            // ... (其他日期的驚喜內容) ...
-            28: {
-                title: "一年前的今天",
-                content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 4</h3><div class="p-4 text-center"><img src="${imagePaths.oneYearAgo}" class="w-full rounded-lg mb-4"><p class="text-xl leading-relaxed">「一年前的今天，我們正在為了要去哪裡玩而煩惱。一年後的今天，我們真的在福岡了！」</p></div>`
-            },
-             // ... (其他日期的驚喜內容) ...
-        };
-
         document.addEventListener('DOMContentLoaded', function() {
-            // --- DOM 元素獲取 ---
-            const giftBoxImage = document.querySelector('#gift-box img');
-            
-            // --- 初始化設定 ---
-            giftBoxImage.src = imagePaths.giftBox;
-            // (其他初始化程式碼...)
+            // --- 密碼設定 ---
+            // 請在這裡修改成你想設定的密碼
+            const PASSWORD = 'chen0927';
+            // --- 設定結束 ---
 
+            // --- 開發設定 ---
+            // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
+            // 正式發佈給對方前，請務必改回 false！
+            const UNLOCK_ALL_DATES = true;
+            // --- 設定結束 ---
 
-            // 以下是您原本的 JavaScript 程式碼，除了上面標示的修改外，其餘保持不變
-            // ...
+            // --- 圖片路徑管理 ---
+            // 把你上傳到 GitHub 的圖片路徑，統一填寫在這裡
+            const imagePaths = {
+                landingBackground: 'https://placehold.co/1920x1080/0d1b2a/e0e1dd?text=我們的故事',
+                day2_blurred: 'image/IMG_7615.jpeg',
+                day11_left: 'https://placehold.co/400x300/1b263b/e0e1dd?text=圖+1',
+                day11_right: 'https://placehold.co/400x300/1b263b/e0e1dd?text=圖+2',
+                day17_puzzle: 'https://placehold.co/300x300/e0b1cb/0d1b2a?text=回憶',
+                day25_map: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡地圖',
+                day28_photo: 'https://placehold.co/600x400/1b263b/e0e1dd?text=一年前的照片',
+                day30_memory: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡回憶',
+                giftBox: 'image/IMG_7616.jpeg'
+            };
+            // --- 圖片路徑結束 ---
+
+            const surprises = {
+                1: { 
+                    title: "歡迎來到你的驚喜月！",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">給我的壽星：</h3>
+                        <p class="text-lg">歡迎來到這個專屬於你的生日驚喜月！從今天起，這裡每天都會有一個小秘密，可能是我們的回憶、有趣的小遊戲，或是可以兌現的真實禮物。準備好，讓我們一起倒數吧！</p>
+                        <button id="claim-gift-btn" class="mt-6 w-full accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded">領取第一份禮物</button>
+                    `,
+                    gameInit: () => {
+                        document.getElementById('claim-gift-btn').addEventListener('click', () => {
+                            const modal = document.getElementById('surprise-modal');
+                            modal.style.display = 'none';
+                            showGiftReveal(surprises['1-gift']);
+                        });
+                    }
+                },
+                '1-gift': {
+                    type: 'gift',
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">恭喜你獲得：</h3>
+                        <p class="text-4xl font-bold my-4">Fujifilm X-M5</p>
+                        <p>希望你喜歡這份禮物，用它來記錄我們未來更多的美好瞬間！</p>
+                    `
+                },
+                2: {
+                    title: "地點大考驗",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">猜猜這是哪裡？</h3>
+                        <img id="blurred-image" src="${imagePaths.day2_blurred}" alt="模糊的照片" class="w-full rounded-lg mb-4 cursor-pointer" style="filter: blur(8px);">
+                        <p class="text-center">（點擊圖片揭曉答案）</p>
+                    `,
+                    gameInit: () => {
+                        const img = document.getElementById('blurred-image');
+                        img.addEventListener('click', () => {
+                            img.style.filter = 'blur(0)';
+                        }, { once: true });
+                    }
+                },
+                3: {
+                    title: "無條件誇誇卡",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">無條件誇誇卡</h4><p class="text-lg mb-6">當你需要信心時，請使用此卡。我會立刻化身你的頭號粉絲，在三分鐘内不斷地稱讚你！</p></div>`
+                },
+                4: {
+                    title: "勇者任務卡 #1",
+                    content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">街頭藝術家挑戰</h4><p>任務：找一個下午，我們一起去買畫冊和色筆，在公園裡為對方畫一幅肖像畫。</p><hr class="my-2 border-gray-600"><p><strong>獎勵：</strong>任務完成後，我會把你的「大作」裱框起來，並請你喝一杯你最愛的手搖飲！</p></div>`
+                },
+                5: {
+                    title: "深夜食堂指定卷",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">深夜食堂指定卷</h4><p class="text-lg mb-6">不管多晚，只要你想吃宵夜，憑此券可指定一樣我能做出來的料理！</p></div>`
+                },
+                6: {
+                    title: "今日運勢小餅乾",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4 text-center">打開今天的幸運</h3>
+                        <div id="fortune-cookie" class="text-center cursor-pointer">
+                            <i class="fas fa-cookie-bite text-9xl text-yellow-200"></i>
+                            <p class="mt-4">（點我打開）</p>
+                        </div>
+                        <div id="fortune-text" class="hidden text-center p-4 bg-gray-800 rounded-lg mt-4">
+                            <p class="text-xl">「今日宜：緊緊抱住身邊的人，會獲得意想不到的能量。」</p>
+                        </div>
+                    `,
+                    gameInit: () => {
+                        document.getElementById('fortune-cookie').addEventListener('click', () => {
+                            document.getElementById('fortune-cookie').classList.add('hidden');
+                            document.getElementById('fortune-text').classList.remove('hidden');
+                        });
+                    }
+                },
+                7: {
+                    title: "我們的故事片段",
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">這個片段，讓我想起...</h3><p>每次看到這個片段，都會想起我們一起大笑的日子。</p><div class="aspect-w-16 aspect-h-9 mt-4"><iframe src="https://www.youtube.com/embed/An_r_t_c2sU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full rounded-lg"></iframe></div>`
+                },
+                8: {
+                    title: "週一能量補給",
+                    type: 'monday',
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯熱拿鐵</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-mug-hot text-6xl text-amber-200 mb-4"></i><p class="text-xl">它會在你最需要的時候，給你溫暖和力量。祝你新的一週充滿能量！</p><hr class="my-4 border-gray-600"><p>本週挑戰預告：「回憶復刻挑戰」，我們可以先來找找要復刻哪張照片喔！</p></div>`
+                },
+                9: {
+                    title: "氣噗噗消氣卡",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">氣噗噗消氣卡</h4><p class="text-lg mb-6">當你生氣時，出示此卡，我會立刻停止爭辯，並給你一個大大的擁抱讓你消氣。</p></div>`
+                },
+                10: {
+                    title: "未來藍圖產生器",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4 text-center">來填寫我們的未來藍圖！</h3>
+                        <div id="future-blueprint" class="bg-gray-800 p-6 rounded-lg">
+                            <div class="text-lg space-y-2">
+                                <p>一年後，我們要一起去 <input type="text" placeholder="一個地點" class="w-24 bg-gray-700 rounded text-center">，</p>
+                                <p>然後一起 <input type="text" placeholder="做一件事" class="w-24 bg-gray-700 rounded text-center">，</p>
+                                <p>最後要一起吃 <input type="text" placeholder="一種食物" class="w-24 bg-gray-700 rounded text-center">。</p>
+                            </div>
+                        </div>
+                        <button id="save-blueprint-btn" class="accent-bg hover-accent-bg text-white font-bold py-2 px-4 rounded mt-4 block mx-auto">截圖存檔</button>
+                    `,
+                    gameInit: () => {
+                        document.getElementById('save-blueprint-btn').addEventListener('click', () => {
+                            const blueprint = document.getElementById('future-blueprint');
+                            html2canvas(blueprint, { backgroundColor: '#1f2937' }).then(canvas => {
+                                const link = document.createElement('a');
+                                link.download = 'our-future-blueprint.png';
+                                link.href = canvas.toDataURL('image/png');
+                                link.click();
+                            });
+                        });
+                    }
+                },
+                11: {
+                    title: "大家來找碴",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">你找得到 3 個不同的地方嗎？</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <svg viewBox="0 0 100 80" class="rounded-lg bg-sky-300">
+                                    <circle cx="85" cy="15" r="10" fill="yellow"/>
+                                    <rect y="60" width="100" height="20" fill="green"/>
+                                    <path d="M 20 60 L 20 40 L 40 40 L 40 60 Z" fill="brown"/>
+                                    <path d="M 15 40 L 45 40 L 30 25 Z" fill="red"/>
+                                    <path d="M 50 50 Q 60 40 70 50 T 90 50" fill="none" stroke="white" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div id="spot-the-diff-container">
+                                <svg viewBox="0 0 100 80" class="rounded-lg bg-sky-300">
+                                    <circle cx="85" cy="15" r="10" fill="yellow"/>
+                                    <path d="M 82 13 C 84 15, 86 15, 88 13" stroke="black" fill="none" stroke-linecap="round"/>
+                                    <rect y="60" width="100" height="20" fill="green"/>
+                                    <path d="M 20 60 L 20 40 L 40 40 L 40 60 Z" fill="blue"/>
+                                    <path d="M 15 40 L 45 40 L 30 25 Z" fill="red"/>
+                                    <path d="M 50 50 Q 60 40 70 50 T 90 50" fill="none" stroke="white" stroke-width="2"/>
+                                    <path d="M 5 10 L 10 15 L 15 10" stroke="black" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+                                </svg>
+                                <!-- Different areas (top, left, width, height in %) -->
+                                <div class="diff-circle" data-id="1" style="top:12.5%; left:80%; width:12.5%; height:12.5%;"></div>
+                                <div class="diff-circle" data-id="2" style="top:50%; left:25%; width:25%; height:25%;"></div>
+                                <div class="diff-circle" data-id="3" style="top:10%; left:2.5%; width:15%; height:10%;"></div>
+                            </div>
+                        </div>
+                        <p id="diff-win" class="text-center mt-4 hidden text-xl accent-color">太厲害了，全部找到了！</p>
+                    `,
+                    gameInit: () => {
+                        let foundCount = 0;
+                        const totalDiffs = 3;
+                        const winMessage = document.getElementById('diff-win');
+                        document.querySelectorAll('.diff-circle').forEach(circle => {
+                            circle.addEventListener('click', (e) => {
+                                if (!e.target.classList.contains('found')) {
+                                    e.target.classList.add('found');
+                                    foundCount++;
+                                    if (foundCount === totalDiffs) {
+                                        winMessage.classList.remove('hidden');
+                                    }
+                                }
+                            }, { once: true });
+                        });
+                    }
+                },
+                12: {
+                    title: "癢癢抓抓卷",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">癢癢抓抓卷</h4><p class="text-lg mb-6">當你覺得背很癢又抓不到時，此券可召喚「不求人」幫你抓到癢！</p></div>`
+                },
+                13: {
+                    title: "命運硬幣",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4 text-center">今晚... 交給命運決定吧！</h3>
+                        <div id="coin" class="w-24 h-24 bg-yellow-400 rounded-full mx-auto flex items-center justify-center text-gray-800 font-bold text-xl cursor-pointer">點我<br>拋硬幣</div>
+                        <p id="coin-result" class="text-2xl text-center mt-6 h-8"></p>
+                    `,
+                    gameInit: () => {
+                        document.getElementById('coin').addEventListener('click', (e) => {
+                            e.target.textContent = '...';
+                            setTimeout(() => {
+                                const result = Math.random() < 0.5 ? '正面：看夜景！' : '反面：看電影！';
+                                document.getElementById('coin-result').textContent = result;
+                                e.target.style.display = 'none';
+                            }, 1000);
+                        }, { once: true });
+                    }
+                },
+                14: {
+                    title: "我們的專屬詞典",
+                    content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-2xl font-bold accent-color mb-2">【快樂指數】</h4><p class="text-lg">名詞。<br>定義：用來衡量一天快樂程度的指標。<br>計算公式：今天見到你的次數 x 100。</p></div>`
+                },
+                15: {
+                    title: "週一小挑戰",
+                    type: 'monday',
+                    openingTitle: '給你力量！',
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">今天的挑戰是...</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-bullseye text-6xl text-red-400 mb-4"></i><p class="text-xl">對今天第一個遇到的同事說早安，並給他一個大大的微笑。完成後，你會發現一整天都順利起來！</p><hr class="my-4 border-gray-600"><p>本週挑戰預告：「一小時外語挑戰」！我們可以先想想要學哪國語言。</p></div>`
+                },
+                16: {
+                    title: "勇者任務卡 #2",
+                    content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">回憶復刻挑戰</h4><p>任務：找出我們的一張舊合照，這個週末，我們要找到相似的場景和衣服，完美復刻它！</p><hr class="my-2 border-gray-600"><p><strong>獎勵：</strong>成功後，我會把新舊照片沖洗出來，裱在一個「今昔對比」的相框裡，並請你喝杯咖啡！</p></div>`
+                },
+                17: {
+                    title: "記憶拼圖",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">拼湊我們的回憶</h3>
+                        <div id="puzzle-container"></div>
+                        <p id="puzzle-win" class="text-center mt-4 hidden text-xl accent-color">完成了！我們的回憶，一塊都不能少。</p>
+                    `,
+                    gameInit: () => {
+                        const container = document.getElementById('puzzle-container');
+                        container.innerHTML = '';
+                        const winMessage = document.getElementById('puzzle-win');
+                        winMessage.classList.add('hidden');
+
+                        let pieces = [];
+                        let selected = null;
+                        const correctOrder = [0, 1, 2, 3];
+                        let currentOrder = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
+
+                        const createPieces = () => {
+                            container.innerHTML = '';
+                            pieces = [];
+                            for (let i = 0; i < 4; i++) {
+                                const piece = document.createElement('div');
+                                piece.classList.add('puzzle-piece');
+                                const originalIndex = currentOrder[i];
+                                const row = Math.floor(originalIndex / 2);
+                                const col = originalIndex % 2;
+                                piece.style.backgroundPosition = `${-col * 150}px ${-row * 150}px`;
+                                piece.dataset.index = i;
+                                piece.addEventListener('click', onPieceClick);
+                                container.appendChild(piece);
+                                pieces.push(piece);
+                            }
+                        };
+                        
+                        const onPieceClick = (e) => {
+                            const piece = e.target;
+                            if (selected === null) {
+                                selected = piece;
+                                piece.classList.add('selected');
+                            } else {
+                                if (selected !== piece) {
+                                    const index1 = parseInt(selected.dataset.index);
+                                    const index2 = parseInt(piece.dataset.index);
+                                    [currentOrder[index1], currentOrder[index2]] = [currentOrder[index2], currentOrder[index1]];
+                                    createPieces();
+                                }
+                                selected.classList.remove('selected');
+                                selected = null;
+                                checkWin();
+                            }
+                        };
+
+                        const checkWin = () => {
+                            if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
+                                winMessage.classList.remove('hidden');
+                            }
+                        };
+
+                        createPieces();
+                    }
+                },
+                18: {
+                    title: "愛情刮刮樂",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">刮開今天的幸運！</h3>
+                        <div id="scratch-container">
+                            <div id="scratch-prize"><p class="text-2xl">🎉 獎品：一個溫暖的抱抱！ 🎉</p></div>
+                            <canvas id="scratch-card" width="400" height="100"></canvas>
+                        </div>
+                    `,
+                    gameInit: () => {
+                        const canvas = document.getElementById('scratch-card');
+                        const container = document.getElementById('scratch-container');
+                        const prize = document.getElementById('scratch-prize');
+                        
+                        canvas.width = container.clientWidth;
+                        canvas.height = prize.clientHeight;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#778da9';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                        let isDrawing = false;
+                        const scratch = (e) => {
+                            if (!isDrawing) return;
+                            e.preventDefault();
+                            const rect = canvas.getBoundingClientRect();
+                            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                            ctx.globalCompositeOperation = 'destination-out';
+                            ctx.beginPath();
+                            ctx.arc(x, y, 15, 0, Math.PI * 2);
+                            ctx.fill();
+                        };
+
+                        canvas.addEventListener('mousedown', () => isDrawing = true);
+                        canvas.addEventListener('mouseup', () => isDrawing = false);
+                        canvas.addEventListener('mousemove', scratch);
+                        canvas.addEventListener('touchstart', () => isDrawing = true, { passive: false });
+                        canvas.addEventListener('touchend', () => isDrawing = false);
+                        canvas.addEventListener('touchmove', scratch, { passive: false });
+                    }
+                },
+                19: {
+                    title: "我們的故事歌單",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">這首歌，讓我想起...</h3>
+                        <p class="mb-4">我把我們的故事，放進了這張歌單裡。點開來聽聽，看你會先想起哪一段回憶？</p>
+                        <a href="https://open.spotify.com/" target="_blank" class="block accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded text-center">點我播放故事歌單 <i class="fab fa-spotify ml-2"></i></a>
+                    `
+                },
+                20: {
+                    title: "勇者任務卡 #3",
+                    content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">一小時外語挑戰</h4><p>任務：選一種我們都完全不會的語言，用App一起學習一小時。結束後，要用學到的單字進行一段三分鐘的對話。</p><hr class="my-2 border-gray-600"><p><strong>獎勵：</strong>挑戰成功後，我會訂那個國家的料理當作我們的晚餐！</p></div>`
+                },
+                21: {
+                    title: "擺爛放空通行證",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">擺爛放空通行證</h4><p class="text-lg mb-6">當你覺得不想做任何家事時，可以使用此通行證。那天所有該做的家事都由我包辦！</p></div>`
+                },
+                22: {
+                    title: "週一能量補給",
+                    type: 'monday',
+                    openingTitle: '你是最棒的！',
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">本週幸運色：天空藍</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-cloud text-6xl text-sky-400 mb-4"></i><p class="text-xl">抬頭看看天空，它會帶給你意想不到的好運和靈感。加油！</p><hr class="my-4 border-gray-600"><p>本週挑戰預告：「美食輪盤大冒險」！準備好你的胃，我們要去吃點不一樣的了！</p></div>`
+                },
+                23: {
+                    title: "勇者任務卡 #4",
+                    content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">美食輪盤大冒險</h4><p>任務：我們一起打開美食App，閉上眼睛在螢幕上亂滑，手指停在哪一家我們「從沒吃過」的餐廳，就去吃那家！</p><hr class="my-2 border-gray-600"><p><strong>獎勵：</strong>不論這餐是驚喜還是驚嚇，這次的餐費由我全額買單！</p></div>`
+                },
+                24: {
+                    title: "跑腿我最行券",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">跑腿我最行券</h4><p class="text-lg mb-6">突然想喝手搖飲？發現醬油用完了？憑此券可召喚「專屬外送員」出動一次！</p></div>`
+                },
+                25: {
+                    title: "行前預告：我們的冒險地圖",
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 1</h3><p>我們的冒險即將啟程！猜猜看，我最期待的行程是哪一個？</p><img src="https://placehold.co/600x400/1b263b/e0e1dd?text=福岡地圖" class="w-full rounded-lg mt-4">`
+                },
+                26: {
+                    title: "我們的福岡進行曲",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 2</h3>
+                        <p class="mb-4">我為這次的旅行，偷偷準備了一張專屬歌單。戴上耳機，讓我們在同樣的旋律裡，創造獨一無二的回憶吧！</p>
+                        <a href="https://open.spotify.com/" target="_blank" class="block accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded text-center">點我播放福岡專屬歌單 <i class="fab fa-spotify ml-2"></i></a>
+                    `
+                },
+                27: { title: "生日快樂！", type: 'fireworks' },
+                28: {
+                    title: "一年前的今天",
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 4</h3><div class="p-4 text-center"><img src="https://placehold.co/600x400/1b263b/e0e1dd?text=一年前的照片" class="w-full rounded-lg mb-4"><p class="text-xl leading-relaxed">「一年前的今天，我們正在為了要去哪裡玩而煩惱。一年後的今天，我們真的在福岡了！」</p></div>`
+                },
+                29: {
+                    title: "旅行中的指定任務",
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 5</h3><div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">便利商店大探險</h4><p>今日任務：找到一家最特別的便利商店，買一瓶從沒喝過的飲料，然後跟我分享！</p></div>`
+                },
+                30: { 
+                    title: "福岡回憶錄", 
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 6</h3><div class="w-full h-64 bg-gray-800 rounded-lg flex items-center justify-center mb-4"><p>把我們最喜歡的福岡合照放在這裡吧！</p></div><p>這趟旅程因為你而完美。我們的故事，未完待續... 親愛的，下一站你想去哪？</p>`
+                }
+            };
+
             const startButton = document.getElementById('start-button');
             const landingPage = document.getElementById('landing-page');
             const surpriseContainer = document.getElementById('surprise-container');
@@ -343,7 +596,7 @@
             const giftBox = document.getElementById('gift-box');
             const giftResult = document.getElementById('gift-result');
             const giftCloseButton = document.querySelector('#gift-reveal-container .close-button');
-
+            
             const today = new Date();
             const currentMonth = today.getMonth();
             const currentDay = today.getDate();
@@ -445,7 +698,7 @@
                 } else if (surprise.type === 'monday') {
                     showMondayMotivation(surprise);
                 } else if (surprise.type === 'gift') {
-                    showGiftReveal(surprises['1-gift']);
+                    showGiftReveal(surprise);
                 }
                 else {
                     modalBody.innerHTML = `<h2 class="text-3xl font-bold text-white mb-6 border-b-2" style="border-color: #778da9;">${surprise.title}</h2><div>${surprise.content}</div>`;
