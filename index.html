@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>給最愛的你</title>
-    <!-- 建議：將圖示上傳到 Imgur 或 GitHub 專案資料夾中，然後使用直接連結 -->
     <link rel="apple-touch-icon" href="https://placehold.co/180x180/0d1b2a/e0e1dd?text=ICON">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
@@ -74,7 +74,6 @@
 </head>
 <body>
     
-    <!-- Password Gate -->
     <div id="password-gate">
         <div class="w-full max-w-xs p-8 bg-gray-800 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold text-center accent-color mb-6">請輸入密碼</h2>
@@ -85,7 +84,6 @@
     </div>
 
 
-    <!-- Landing Page -->
     <div id="landing-page">
         <h1 class="text-4xl md:text-7xl font-bold text-white mb-6 text-center animate-pulse">給我的最愛</h1>
         <p class="text-xl md:text-2xl text-gray-300 mb-12 text-center">九月的每一天，都為你準備了一個小秘密</p>
@@ -94,21 +92,18 @@
         </button>
     </div>
 
-    <!-- Surprises Calendar -->
     <div id="surprise-container" class="hidden p-4 md:p-8">
         <h2 class="text-3xl md:text-5xl font-bold accent-color mb-8 text-center">九月驚喜日曆</h2>
         <div id="calendar-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 max-w-6xl mx-auto"></div>
     </div>
 
-    <!-- Modal for Daily Surprise -->
     <div id="surprise-modal" class="modal">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
+            <span class="close-button">×</span>
             <div id="modal-body"></div>
         </div>
     </div>
 
-    <!-- Fireworks container -->
     <div id="fireworks-container" class="hidden fixed top-0 left:0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
         <canvas id="fireworks-canvas"></canvas>
         <div id="birthday-title" class="px-4">
@@ -124,39 +119,31 @@
         </div>
     </div>
     
-    <!-- Monday Motivation Container -->
     <div id="monday-motivation-container" class="hidden fixed top-0 left:0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
-        <span class="close-button absolute top-8 right-8 text-2xl">&times;</span>
+        <span class="close-button absolute top-8 right-8 text-2xl">×</span>
         <div id="monday-title" class="px-4">
             <h1 class="text-white text-4xl md:text-6xl font-bold" style="text-shadow: 0 0 20px #a0c4ff;"></h1>
         </div>
         <div id="monday-content-wrapper" class="px-4 opacity-0 w-full max-w-3xl">
-            <!-- Monday content will be injected here -->
-        </div>
+            </div>
     </div>
 
 
     <script>
-        // --- 密碼設定 ---
-        // 密碼已經被雜湊(hashing)處理，不是明碼。
-        const HASHED_PASSWORD = '-2088998829'; // 這是 的雜湊值
-
-        // 如果你想更換密碼，請：
+        // --- START: 新的密碼設定 ---
+        // 這是使用 SHA-256 加密後的密碼雜湊值。
+        // 請注意：這仍然是前端驗證，僅適合用於非關鍵性的個人專案。
+        //
+        // 如何產生新的密碼雜湊值：
         // 1. 在瀏覽器中打開這個網頁。
         // 2. 按 F12 打開開發者工具，點選 "Console" (主控台)。
-        // 3. 貼上這行指令： simpleHash('你的新密碼') 然後按 Enter。
-        // 4. 把顯示出來的數字（包含負號），複製並取代上面的 HASHED_PASSWORD 值。
-        const simpleHash = (str) => {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                const char = str.charCodeAt(i);
-                hash = (hash << 5) - hash + char;
-                hash |= 0; // Convert to 32bit integer
-            }
-            return hash.toString();
-        };
-        window.simpleHash = simpleHash; // For generating new hashes in console
-        // --- 設定結束 ---
+        // 3. 貼上這行指令： CryptoJS.SHA256('你的新密碼').toString() 然後按 Enter。
+        // 4. 把顯示出來的長字串，複製並取代下面的 HASHED_PASSWORD 值。
+        //
+        // 範例：如果您的新密碼是 jenny0927
+        // 則 HASHED_PASSWORD 的值會是 '1c52b3c43558c7362a26084c83c2a63a553f19114b3014fce88771440742a000'
+        const HASHED_PASSWORD = '1c52b3c43558c7362a26084c83c2a63a553f19114b3014fce88771440742a000'; // 這是 'jenny0927' 的雜湊值
+        // --- END: 新的密碼設定 ---
 
         // --- 開發設定 ---
         // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
@@ -282,7 +269,6 @@
                                 <path d="M 50 50 Q 60 40 70 50 T 90 50" fill="none" stroke="white" stroke-width="2"/>
                                 <path d="M 5 10 L 10 15 L 15 10" stroke="black" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
                             </svg>
-                            <!-- Different areas (top, left, width, height in %) -->
                             <div class="diff-circle" data-id="1" style="top:12.5%; left:80%; width:12.5%; height:12.5%;"></div>
                             <div class="diff-circle" data-id="2" style="top:50%; left:25%; width:25%; height:25%;"></div>
                             <div class="diff-circle" data-id="3" style="top:10%; left:2.5%; width:15%; height:10%;"></div>
@@ -525,20 +511,15 @@
             const passwordSubmit = document.getElementById('password-submit');
             const passwordError = document.getElementById('password-error');
             
-            // --- 開發設定 ---
-            // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
-            // 正式發佈給對方前，請務必改回 false！
-            const UNLOCK_ALL_DATES = true;
-            // --- 設定結束 ---
-
             const today = new Date();
             const currentMonth = today.getMonth();
             const currentDay = today.getDate();
             
-            // --- Password Logic ---
+            // --- START: 修改後的密碼驗證邏輯 ---
             const checkPassword = () => {
                 const input = passwordInput.value.trim();
-                if (simpleHash(input) === HASHED_PASSWORD) {
+                // 使用 SHA256 來比對使用者輸入的密碼
+                if (CryptoJS.SHA256(input).toString() === HASHED_PASSWORD) {
                     passwordGate.style.opacity = 0;
                     setTimeout(() => {
                         passwordGate.style.display = 'none';
@@ -549,6 +530,7 @@
                     passwordInput.value = '';
                 }
             };
+            // --- END: 修改後的密碼驗證邏輯 ---
 
             passwordSubmit.addEventListener('click', checkPassword);
             passwordInput.addEventListener('keyup', (event) => {
