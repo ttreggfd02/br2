@@ -183,7 +183,7 @@
     <div id="gift-reveal-container">
          <span class="close-button absolute top-8 right-8 text-2xl">&times;</span>
          <div id="gift-box">
-             <img src="image/IMG_7617.jpeg" alt="禮物箱" class="w-48 h-48">
+             <img src="" alt="禮物箱" class="w-48 h-48">
              <p class="text-center mt-4 text-lg animate-pulse">點我打開</p>
          </div>
          <div id="gift-result" class="text-center">
@@ -204,11 +204,10 @@
             // 正式發佈給對方前，請務必改回 false！
             const UNLOCK_ALL_DATES = true;
             // --- 設定結束 ---
-
+            
             // --- 圖片路徑管理 ---
             // 把你上傳到 GitHub 的圖片路徑，統一填寫在這裡
             const imagePaths = {
-                app_icon: 'image/icon.png',
                 landingBackground: 'https://placehold.co/1920x1080/0d1b2a/e0e1dd?text=我們的故事',
                 day2_blurred: 'image/IMG_7615.jpeg',
                 day11_left: 'https://placehold.co/400x300/1b263b/e0e1dd?text=圖+1',
@@ -217,7 +216,8 @@
                 day25_map: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡地圖',
                 day28_photo: 'https://placehold.co/600x400/1b263b/e0e1dd?text=一年前的照片',
                 day30_memory: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡回憶',
-                giftBox: 'image/IMG_7617.jpeg'
+                giftBox: 'image/IMG_7616.jpeg',
+                giftBoxOpen: 'image/IMG_7621.png' // <--- 新增打開的禮物箱圖片
             };
             // --- 圖片路徑結束 ---
 
@@ -597,6 +597,12 @@
             const giftBox = document.getElementById('gift-box');
             const giftResult = document.getElementById('gift-result');
             const giftCloseButton = document.querySelector('#gift-reveal-container .close-button');
+            const giftBoxImage = document.querySelector('#gift-box img');
+
+            // --- Apply Image Paths ---
+            document.getElementById('landing-page').style.backgroundImage = `linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('${imagePaths.landingBackground}')`;
+            giftBoxImage.src = imagePaths.giftBox;
+
             
             const today = new Date();
             const currentMonth = today.getMonth();
@@ -698,9 +704,8 @@
                     launchFireworks();
                 } else if (surprise.type === 'monday') {
                     showMondayMotivation(surprise);
-                } else if (surprise.type === 'gift') {
-                    showGiftReveal(surprise);
                 }
+                // Removed the separate 'gift' type check from here
                 else {
                     modalBody.innerHTML = `<h2 class="text-3xl font-bold text-white mb-6 border-b-2" style="border-color: #778da9;">${surprise.title}</h2><div>${surprise.content}</div>`;
                     modal.style.display = 'block';
@@ -712,6 +717,7 @@
             }
             
             function showGiftReveal(surprise) {
+                giftBoxImage.src = imagePaths.giftBox; // Reset to closed box
                 giftResult.innerHTML = surprise.content;
                 giftResult.classList.remove('visible');
                 giftBox.classList.remove('open');
@@ -719,6 +725,7 @@
                 giftContainer.style.display = 'flex';
 
                 const openGiftHandler = () => {
+                    giftBoxImage.src = imagePaths.giftBoxOpen; // Change to open box
                     giftBox.classList.add('open');
                     setTimeout(() => {
                         giftBox.style.display = 'none';
@@ -903,3 +910,4 @@
     </script>
 </body>
 </html>
+
