@@ -139,8 +139,23 @@
     <script>
         // --- 密碼設定 ---
         // 密碼已經被雜湊(hashing)處理，不是明碼。
-        const HASHED_PASSWORD = '-2088998829';
+        const HASHED_PASSWORD = '-2088998829'; // 這是 的雜湊值
 
+        // 如果你想更換密碼，請：
+        // 1. 在瀏覽器中打開這個網頁。
+        // 2. 按 F12 打開開發者工具，點選 "Console" (主控台)。
+        // 3. 貼上這行指令： simpleHash('你的新密碼') 然後按 Enter。
+        // 4. 把顯示出來的數字（包含負號），複製並取代上面的 HASHED_PASSWORD 值。
+        const simpleHash = (str) => {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = (hash << 5) - hash + char;
+                hash |= 0; // Convert to 32bit integer
+            }
+            return hash.toString();
+        };
+        window.simpleHash = simpleHash; // For generating new hashes in console
         // --- 設定結束 ---
 
         // --- 開發設定 ---
@@ -505,6 +520,10 @@
             const mondayTitle = document.querySelector('#monday-title h1');
             const mondayContentWrapper = document.getElementById('monday-content-wrapper');
             const mondayCloseButton = document.querySelector('#monday-motivation-container .close-button');
+            const passwordGate = document.getElementById('password-gate');
+            const passwordInput = document.getElementById('password-input');
+            const passwordSubmit = document.getElementById('password-submit');
+            const passwordError = document.getElementById('password-error');
             
             // --- 開發設定 ---
             // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
@@ -516,9 +535,32 @@
             const currentMonth = today.getMonth();
             const currentDay = today.getDate();
             
+            // --- Password Logic ---
+            const checkPassword = () => {
+                const input = passwordInput.value.trim();
+                if (simpleHash(input) === HASHED_PASSWORD) {
+                    passwordGate.style.opacity = 0;
+                    setTimeout(() => {
+                        passwordGate.style.display = 'none';
+                        landingPage.style.display = 'flex';
+                    }, 500);
+                } else {
+                    passwordError.textContent = '密碼錯誤';
+                    passwordInput.value = '';
+                }
+            };
+
+            passwordSubmit.addEventListener('click', checkPassword);
+            passwordInput.addEventListener('keyup', (event) => {
+                if (event.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+
+
             startButton.addEventListener('click', () => {
                 landingPage.style.display = 'none';
-                surpriseContainer.classList.remove('hidden');
+                surpriseContainer.style.display = 'block';
             });
 
             const closeModal = () => {
