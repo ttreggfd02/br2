@@ -353,8 +353,12 @@
                     `,
                     gameInit: () => {
                         const img = document.getElementById('blurred-image');
+                        const revealText = document.getElementById('reveal-answer-text');
+                        const answerContainer = document.getElementById('answer-container');
                         img.addEventListener('click', () => {
                             img.style.filter = 'blur(0)';
+                            revealText.textContent = ''; // Hide the reveal text
+                            answerContainer.classList.remove('hidden'); // Show the answer
                         }, { once: true });
                     }
                 },
