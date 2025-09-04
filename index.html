@@ -430,33 +430,27 @@
                 8: {
                     title: "週一能量補給",
                     type: 'monday',
-                                        content: `
+                    content: `
                         <h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯熱拿鐵</h3>
                         <div class="bg-gray-800 p-6 rounded-lg text-center">
                             <i class="fas fa-mug-hot text-6xl text-amber-200 mb-4"></i>
                             <p class="text-xl">它會在你最需要的時候，給你溫暖和力量。祝你新的一週充滿能量！</p>
                             <div class="my-4">
                                 <p class="mb-2 text-gray-400">也聽聽我想對你說的話：</p>
-                                <audio controls class="w-full">
+                                <audio id="day8-audio" controls class="w-full">
                                     <source src="recorder/day8.m4a" type="audio/mp4">
                                     您的瀏覽器不支援音檔播放。
                                 </audio>
-                                <p id="audio-error" class="text-red-400 text-sm mt-2 hidden">無法載入錄音檔，請確認 recorder/day8.m4a 檔案已上傳且路徑正確。</p>
                             </div>
-                            <hr class="my-4 border-gray-600">
-                            <p>本週挑戰預告：「回憶復刻挑戰」，我們可以先來找找要復刻哪張照片喔！</p>
                         </div>
                     `,
                     gameInit: () => {
                         const audio = document.getElementById('day8-audio');
                         if (audio) {
-                            const errorMsg = document.getElementById('audio-error');
-                            const source = audio.querySelector('source');
-                            if (source) {
-                                source.addEventListener('error', function() {
-                                    errorMsg.classList.remove('hidden');
-                                });
-                            }
+                            // 嘗試播放音檔，如果被瀏覽器阻擋，會在控制台顯示訊息
+                            audio.play().catch(e => {
+                                console.log("瀏覽器阻止了自動播放，需要使用者手動點擊播放。");
+                            });
                         }
                     }
                 },
