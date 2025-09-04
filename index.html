@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JennyOnly</title>
+    <title>給最愛的你</title>
     <!-- 建議：將圖示上傳到 Imgur 或 GitHub 專案資料夾中，然後使用直接連結 -->
     <link rel="apple-touch-icon" href="image/icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -191,6 +191,7 @@
             align-items: center;
             background-color: #415a77;
             color: #e0e1dd;
+            visibility: hidden; /* Hide prize initially */
         }
         #scratch-card {
             position: absolute;
@@ -283,13 +284,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             // --- 密碼設定 ---
             // 請在這裡修改成你想設定的密碼
-            const PASSWORD = 'chen0927';
+            const PASSWORD = 'chen09';
             // --- 設定結束 ---
 
             // --- 開發設定 ---
             // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
             // 正式發佈給對方前，請務必改回 false！
-            const UNLOCK_ALL_DATES = false;
+            const UNLOCK_ALL_DATES = true;
             // --- 設定結束 ---
             
             // --- 圖片路徑管理 ---
@@ -347,8 +348,6 @@
                         <p id="reveal-answer-text" class="text-center">（點擊圖片揭曉答案）</p>
                         <div id="answer-container" class="hidden text-center mt-4">
                             <p class="text-lg accent-color">2024/02/19 17:30 @ round round</p>
-                            <p class="text-lg accent-color">超喜歡我們的杯杯<3</p>
-                            <p class="text-lg accent-color">可惜現在已經暫停營業了ＱＱ</p>
                         </div>
                     `,
                     gameInit: () => {
@@ -430,7 +429,22 @@
                 8: {
                     title: "週一能量補給",
                     type: 'monday',
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯熱拿鐵</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-mug-hot text-6xl text-amber-200 mb-4"></i><p class="text-xl">它會在你最需要的時候，給你溫暖和力量。祝你新的一週充滿能量！</p><hr class="my-4 border-gray-600"><p>本週挑戰預告：「回憶復刻挑戰」，我們可以先來找找要復刻哪張照片喔！</p></div>`
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯熱拿鐵</h3>
+                        <div class="bg-gray-800 p-6 rounded-lg text-center">
+                            <i class="fas fa-mug-hot text-6xl text-amber-200 mb-4"></i>
+                            <p class="text-xl">它會在你最需要的時候，給你溫暖和力量。祝你新的一週充滿能量！</p>
+                            <div class="my-4">
+                                <p class="mb-2 text-gray-400">也聽聽我想對你說的話：</p>
+                                <audio controls class="w-full">
+                                    <source src="recorder/day8.mp3" type="audio/mpeg">
+                                    您的瀏覽器不支援音檔播放。
+                                </audio>
+                            </div>
+                            <hr class="my-4 border-gray-600">
+                            <p>本週挑戰預告：「回憶復刻挑戰」，我們可以先來找找要復刻哪張照片喔！</p>
+                        </div>
+                    `
                 },
                 9: {
                     title: "氣噗噗消氣卡",
@@ -629,7 +643,10 @@
                     gameInit: () => {
                         const canvas = document.getElementById('scratch-card');
                         const container = document.getElementById('scratch-container');
+                        const prize = document.getElementById('scratch-prize');
                         
+                        prize.style.visibility = 'visible'; // Make sure it's visible before we draw on top
+
                         canvas.width = container.clientWidth;
                         canvas.height = container.clientHeight;
 
