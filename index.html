@@ -283,13 +283,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             // --- 密碼設定 ---
             // 請在這裡修改成你想設定的密碼
-            const PASSWORD = 'chen0927';
+            const PASSWORD = 'chen09';
             // --- 設定結束 ---
 
             // --- 開發設定 ---
             // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
             // 正式發佈給對方前，請務必改回 false！
-            const UNLOCK_ALL_DATES = false;
+            const UNLOCK_ALL_DATES = true;
             // --- 設定結束 ---
             
             // --- 圖片路徑管理 ---
@@ -431,10 +431,10 @@
                     title: "週一能量補給",
                     type: 'monday',
                     content: `
-                        <h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯熱拿鐵</h3>
+                        <h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯冰美式</h3>
                         <div class="bg-gray-800 p-6 rounded-lg text-center">
                             <i class="fas fa-mug-hot text-6xl text-amber-200 mb-4"></i>
-                            <p class="text-xl">它會在你最需要的時候，給你溫暖和力量。祝你新的一週充滿能量！</p>
+                            <p class="text-xl">它會在你最需要的時候，給你力量。祝你新的一週充滿能量！</p>
                             <div class="my-4">
                                 <p class="mb-2 text-gray-400">也聽聽我想對你說的話：</p>
                                 <audio id="day8-audio" controls class="w-full">
@@ -462,8 +462,45 @@
                     content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">氣噗噗消氣卡</h4><p class="text-lg mb-6">當你生氣時，出示此卡，我會立刻停止爭辯，並給你一個大大的擁抱讓你消氣。</p></div>`
                 },
                 10: {
-                    title: "深夜食堂指定卷",
-                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">深夜食堂指定卷</h4><p class="text-lg mb-6">不管多晚，只要你想吃宵夜，憑此券可指定一樣我能做出來的料理！</p></div>`
+                    title: "愛情刮刮樂",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">刮開今天的幸運！</h3>
+                        <div id="scratch-container">
+                            <div id="scratch-prize"><p class="text-2xl">🎉 獎品：一個溫暖的抱抱！ 🎉</p></div>
+                            <canvas id="scratch-card" width="400" height="100"></canvas>
+                        </div>
+                    `,
+                    gameInit: () => {
+                        const canvas = document.getElementById('scratch-card');
+                        const container = document.getElementById('scratch-container');
+                        
+                        canvas.width = container.clientWidth;
+                        canvas.height = container.clientHeight;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#778da9';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                        let isDrawing = false;
+                        const scratch = (e) => {
+                            if (!isDrawing) return;
+                            e.preventDefault();
+                            const rect = canvas.getBoundingClientRect();
+                            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                            ctx.globalCompositeOperation = 'destination-out';
+                            ctx.beginPath();
+                            ctx.arc(x, y, 15, 0, Math.PI * 2);
+                            ctx.fill();
+                        };
+
+                        canvas.addEventListener('mousedown', () => isDrawing = true);
+                        canvas.addEventListener('mouseup', () => isDrawing = false);
+                        canvas.addEventListener('mousemove', scratch);
+                        canvas.addEventListener('touchstart', () => isDrawing = true, { passive: false });
+                        canvas.addEventListener('touchend', () => isDrawing = false);
+                        canvas.addEventListener('touchmove', scratch, { passive: false });
+                    }
                 },
                 11: {
                     title: "大家來找碴",
@@ -643,45 +680,8 @@
                     }
                 },
                 18: {
-                    title: "愛情刮刮樂",
-                    content: `
-                        <h3 class="text-2xl font-bold accent-color mb-4">刮開今天的幸運！</h3>
-                        <div id="scratch-container">
-                            <div id="scratch-prize"><p class="text-2xl">🎉 獎品：一個溫暖的抱抱！ 🎉</p></div>
-                            <canvas id="scratch-card" width="400" height="100"></canvas>
-                        </div>
-                    `,
-                    gameInit: () => {
-                        const canvas = document.getElementById('scratch-card');
-                        const container = document.getElementById('scratch-container');
-                        
-                        canvas.width = container.clientWidth;
-                        canvas.height = container.clientHeight;
-
-                        const ctx = canvas.getContext('2d');
-                        ctx.fillStyle = '#778da9';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                        let isDrawing = false;
-                        const scratch = (e) => {
-                            if (!isDrawing) return;
-                            e.preventDefault();
-                            const rect = canvas.getBoundingClientRect();
-                            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-                            const y = (e.clientY || e.touches[0].clientY) - rect.top;
-                            ctx.globalCompositeOperation = 'destination-out';
-                            ctx.beginPath();
-                            ctx.arc(x, y, 15, 0, Math.PI * 2);
-                            ctx.fill();
-                        };
-
-                        canvas.addEventListener('mousedown', () => isDrawing = true);
-                        canvas.addEventListener('mouseup', () => isDrawing = false);
-                        canvas.addEventListener('mousemove', scratch);
-                        canvas.addEventListener('touchstart', () => isDrawing = true, { passive: false });
-                        canvas.addEventListener('touchend', () => isDrawing = false);
-                        canvas.addEventListener('touchmove', scratch, { passive: false });
-                    }
+                    title: "深夜食堂指定卷",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">深夜食堂指定卷</h4><p class="text-lg mb-6">不管多晚，只要你想吃宵夜，憑此券可指定一樣我能做出來的料理！</p></div>`
                 },
                 19: {
                     title: "我們的故事片段",
