@@ -283,13 +283,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             // --- 密碼設定 ---
             // 請在這裡修改成你想設定的密碼
-            const PASSWORD = 'chen09';
+            const PASSWORD = 'chen0927';
             // --- 設定結束 ---
 
             // --- 開發設定 ---
             // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
             // 正式發佈給對方前，請務必改回 false！
-            const UNLOCK_ALL_DATES = true;
+            const UNLOCK_ALL_DATES = false;
             // --- 設定結束 ---
             
             // --- 圖片路徑管理 ---
@@ -420,10 +420,10 @@
                     }
                 },
                 7: {
-                    title: "我們的故事歌單",
+                    title: "專屬歌單",
                     content: `
                         <h3 class="text-2xl font-bold accent-color mb-4">這首歌，讓我想起...</h3>
-                        <p class="mb-4">我把我們的故事，放進了這張歌單裡。點開來聽聽，看你會先想起哪一段回憶？</p>
+                        <p class="mb-4">我把想說的話，放進了這張歌單裡。點開來聽聽，看看你喜不喜翻？</p>
                         <a href="${linkPaths.day7_spotify}" target="_blank" class="block accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded text-center">點我播放故事歌單 <i class="fab fa-spotify ml-2"></i></a>
                     `
                 },
@@ -462,11 +462,11 @@
                     content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">氣噗噗消氣卡</h4><p class="text-lg mb-6">當你生氣時，出示此卡，我會立刻停止爭辯，並給你一個大大的擁抱讓你消氣。</p></div>`
                 },
                 10: {
-                    title: "愛情刮刮樂",
+                    title: "幸運刮刮樂",
                     content: `
                         <h3 class="text-2xl font-bold accent-color mb-4">刮開今天的幸運！</h3>
                         <div id="scratch-container">
-                            <div id="scratch-prize"><p class="text-2xl">🎉 獎品：一個溫暖的抱抱！ 🎉</p></div>
+                            <div id="scratch-prize"><p class="text-2xl">🎉 獎品：陳傑憲獎金1000元！ 🎉</p></div>
                             <canvas id="scratch-card" width="400" height="100"></canvas>
                         </div>
                     `,
@@ -562,7 +562,7 @@
                         <div class="coin-container mb-6 flex justify-center">
                             <div id="coin" class="coin">
                                 <div class="face heads">看夜景</div>
-                                <div class="face tails">看電影</div>
+                                <div class="face tails">吃好料</div>
                             </div>
                         </div>
                         <button id="flipButton" class="w-full accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded-lg disabled:bg-gray-500">拋硬幣</button>
@@ -595,7 +595,7 @@
                                 if (isHeads) {
                                     resultText.textContent = '結果：看夜景！';
                                 } else {
-                                    resultText.textContent = '結果：看電影！';
+                                    resultText.textContent = '結果：吃好料！';
                                 }
                                 flipButton.disabled = false;
                                 coinContainer.classList.remove('is-tossing');
@@ -608,7 +608,7 @@
                     content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-2xl font-bold accent-color mb-2">【快樂指數】</h4><p class="text-lg">名詞。<br>定義：用來衡量一天快樂程度的指標。<br>計算公式：今天見到你的次數 x 100。</p></div>`
                 },
                 15: {
-                    title: "週一小挑戰",
+                    title: "週一加油站",
                     type: 'monday',
                     openingTitle: '給你力量！',
                     content: `<h3 class="text-2xl font-bold accent-color mb-4">今天的挑戰是...</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-bullseye text-6xl text-red-400 mb-4"></i><p class="text-xl">對今天第一個遇到的同事說早安，並給他一個大大的微笑。完成後，你會發現一整天都順利起來！</p><hr class="my-4 border-gray-600"><p>本週挑戰預告：「一小時外語挑戰」！我們可以先想想要學哪國語言。</p></div>`
