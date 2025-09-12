@@ -569,8 +569,68 @@
                     }
                 },
                 14: {
-                    title: "我們的專屬詞典",
-                    content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-2xl font-bold accent-color mb-2">【快樂指數】</h4><p class="text-lg">名詞。<br>定義：用來衡量一天快樂程度的指標。<br>計算公式：今天見到你的次數 x 100。</p></div>`
+                    title: "碼錶挑戰",
+                    content: `
+                        <div class="p-8 text-center">
+                            <p class="text-gray-400 mb-8">數字會一直跑，你的目標是精準地在碼錶顯示為 **100** 時按下按鈕！</p>
+                            <div id="timer-display" class="mb-8 text-6xl font-bold text-white">000</div>
+                            <div>
+                                <button id="mainButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105">
+                                    開始
+                                </button>
+                            </div>
+                            <div id="resultMessage" class="mt-8 text-xl font-semibold"></div>
+                        </div>
+                    `,
+                    gameInit: () => {
+                        const display = document.getElementById('timer-display');
+                        const mainButton = document.getElementById('mainButton');
+                        const resultMessage = document.getElementById('resultMessage');
+
+                        let timer = null;
+                        let count = 0;
+                        let isRunning = false;
+
+                        function updateDisplay() {
+                            display.textContent = String(count).padStart(3, '0');
+                        }
+
+                        function handleButtonClick() {
+                            if (!isRunning) {
+                                // 開始遊戲
+                                count = 0;
+                                updateDisplay();
+                                resultMessage.textContent = '';
+                                
+                                mainButton.textContent = '暫停';
+                                mainButton.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                                mainButton.classList.add('bg-red-500', 'hover:bg-red-600');
+
+                                isRunning = true;
+                                timer = setInterval(() => {
+                                    count++;
+                                    updateDisplay();
+                                }, 50);
+                            } else {
+                                // 暫停遊戲
+                                clearInterval(timer);
+                                isRunning = false;
+                                
+                                mainButton.textContent = '重新開始';
+                                mainButton.classList.remove('bg-red-500', 'hover:bg-red-600');
+                                mainButton.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                                
+                                if (count === 100) {
+                                    resultMessage.textContent = '恭喜你！完美停在100！🎉';
+                                    resultMessage.className = 'mt-8 text-xl font-semibold text-green-400';
+                                } else {
+                                    resultMessage.textContent = `你停在 ${count}，再試試看！`;
+                                    resultMessage.className = 'mt-8 text-xl font-semibold text-red-400';
+                                }
+                            }
+                        }
+                        mainButton.addEventListener('click', handleButtonClick);
+                    }
                 },
                 15: {
                     title: "週一小挑戰",
