@@ -593,10 +593,10 @@
                     }
                 },
                 14: {
-                    title: "碼錶挑戰",
+                    title: "你是100分",
                     content: `
                         <div class="p-8 text-center">
-                            <p class="text-gray-400 mb-8">數字會一直跑，你的目標是精準地在碼錶顯示為 **100** 時按下按鈕！</p>
+                            <p class="text-gray-400 mb-8">數字會一直跑，你的目標是精準地在碼錶顯示為"100"時按下按鈕！</p>
                             <div id="timer-display" class="mb-8 text-6xl font-bold text-white">000</div>
                             <div>
                                 <button id="mainButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105">
@@ -645,8 +645,11 @@
                                 mainButton.classList.add('bg-blue-500', 'hover:bg-blue-600');
                                 
                                 if (count === 100) {
-                                    resultMessage.textContent = '恭喜你！完美停在100！🎉';
+                                    resultMessage.textContent = '恭喜你！完美停在100！恭喜獲得1000元獎勵金！🎉';
                                     resultMessage.className = 'mt-8 text-xl font-semibold text-green-400';
+                                } else if ((count >= 95 && count <= 99) || (count >= 101 && count <= 105)) {
+                                    resultMessage.textContent = `很接近了！停在 ${count}，恭喜獲得500元獎勵金！💰`;
+                                    resultMessage.className = 'mt-8 text-xl font-semibold text-yellow-400';    
                                 } else {
                                     resultMessage.textContent = `你停在 ${count}，再試試看！`;
                                     resultMessage.className = 'mt-8 text-xl font-semibold text-red-400';
