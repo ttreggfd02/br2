@@ -201,22 +201,23 @@
             cursor: crosshair;
             z-index: 1;
         }
+        #puzzle-container {
+            width: 302px; /* 拼圖塊寬度 100px * 3 + 邊框 2px */
+            height: 401px; /* 拼圖塊高度 133px * 3 + 邊框 2px */
+            margin: auto;
+            border: 1px solid #778da9;
+        }
         .puzzle-piece {
-            width: 150px;
-            height: 150px;
+            width: 100px;  /* 寬度改為 100px */
+            height: 133px; /* 高度改為 133px */
             border: 1px solid #fff;
             cursor: pointer;
-            display: inline-block;
+            float: left; /* 新增這行讓拼圖塊並排 */
+            background-size: 300px 399px; /* 背景圖總尺寸 */
         }
         .puzzle-piece.selected {
             border: 2px solid #e0b1cb;
             opacity: 0.7;
-        }
-        #puzzle-container {
-            width: 302px;
-            height: 302px;
-            margin: auto;
-            border: 1px solid #778da9;
         }
     </style>
 </head>
@@ -701,26 +702,33 @@
 
                         let pieces = [];
                         let selected = null;
-                        const correctOrder = [0, 1, 2, 3];
-                        let currentOrder = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
+                        // --- 修改這裡 ---
+                        const gridSize = 3;
+                        const pieceCount = gridSize * gridSize;
+                        const pieceWidth = 100;
+                        const pieceHeight = 133;
+                        const correctOrder = Array.from({length: pieceCount}, (_, i) => i);
+                        let currentOrder = [...correctOrder].sort(() => Math.random() - 0.5);
+                        // --- 修改結束 ---
 
                         const createPieces = () => {
                             container.innerHTML = '';
                             pieces = [];
-                            for (let i = 0; i < 4; i++) {
+                            // --- 修改這裡 ---
+                            for (let i = 0; i < pieceCount; i++) {
                                 const piece = document.createElement('div');
                                 piece.classList.add('puzzle-piece');
-                                // --- 就是這一行！請把它加進來 ---
                                 piece.style.backgroundImage = `url(${imagePaths.day17_puzzle})`;
                                 const originalIndex = currentOrder[i];
-                                const row = Math.floor(originalIndex / 2);
-                                const col = originalIndex % 2;
-                                piece.style.backgroundPosition = `${-col * 150}px ${-row * 150}px`;
+                                const row = Math.floor(originalIndex / gridSize);
+                                const col = originalIndex % gridSize;
+                                piece.style.backgroundPosition = `${-col * pieceWidth}px ${-row * pieceHeight}px`;
                                 piece.dataset.index = i;
                                 piece.addEventListener('click', onPieceClick);
                                 container.appendChild(piece);
                                 pieces.push(piece);
                             }
+                            // --- 修改結束 ---
                         };
                         
                         const onPieceClick = (e) => {
@@ -733,10 +741,15 @@
                                     const index1 = parseInt(selected.dataset.index);
                                     const index2 = parseInt(piece.dataset.index);
                                     [currentOrder[index1], currentOrder[index2]] = [currentOrder[index2], currentOrder[index1]];
+                                    // 移除 selected class 再重新渲染
+                                    selected.classList.remove('selected');
+                                    selected = null;
                                     createPieces();
+                                } else {
+                                     // 如果點擊同一個，就取消選取
+                                     selected.classList.remove('selected');
+                                     selected = null;
                                 }
-                                selected.classList.remove('selected');
-                                selected = null;
                                 checkWin();
                             }
                         };
@@ -744,6 +757,8 @@
                         const checkWin = () => {
                             if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
                                 winMessage.classList.remove('hidden');
+                                // 移除點擊事件，避免完成後還能操作
+                                pieces.forEach(p => p.removeEventListener('click', onPieceClick));
                             }
                         };
 
