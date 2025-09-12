@@ -219,6 +219,33 @@
             border: 2px solid #e0b1cb;
             opacity: 0.7;
         }
+        /* --- Day 20 Quiz Styles --- */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background-color: #415a77;
+            transition: all 0.2s ease-in-out;
+        }
+        .quiz-option:hover {
+            background-color: #778da9;
+            border-color: #e0b1cb;
+        }
+        .quiz-option.correct {
+            background-color: #5d9b6a; /* Green for correct */
+            color: white;
+        }
+        .quiz-option.incorrect {
+            background-color: #b56576; /* Red for incorrect */
+            color: white;
+        }
+        .quiz-option:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
@@ -774,8 +801,120 @@
                     content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">一小時外語挑戰</h4><p>任務：選一種我們都完全不會的語言，用App一起學習一小時。結束後，要用學到的單字進行一段三分鐘的對話。</p><hr class="my-2 border-gray-600"><p><strong>獎勵：</strong>挑戰成功後，我會訂那個國家的料理當作我們的晚餐！</p></div>`
                 },
                 20: {
-                    title: "擺爛放空通行證",
-                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">擺爛放空通行證</h4><p class="text-lg mb-6">當你覺得不想做任何家事時，可以使用此通行證。那天所有該做的家事都由我包辦！</p></div>`
+                    title: "默契大考驗！",
+                    content: `
+                        <div id="quiz-container">
+                            <h3 id="question-text" class="text-2xl font-bold accent-color mb-6 text-center"></h3>
+                            <div id="options-container" class="space-y-2"></div>
+                            <p id="feedback-text" class="text-center mt-4 h-6"></p>
+                            <div id="quiz-results" class="hidden text-center"></div>
+                        </div>
+                    `,
+                    gameInit: () => {
+                        // --- 在這裡修改你的題目 ---
+                        const quizQuestions = [
+                            {
+                                question: "第一次一起慶祝生日是在哪個餐廳？",
+                                options: ["TBS剔邦饈", "雅竹鐵板料理", "樂葵法式鐵板燒"],
+                                answer: "雅竹鐵板料理",
+                                feedback: "答對了！那是我第一次吃高級鐵板燒超級開心！"
+                            },
+                            {
+                                question: "從我們交往的第一天到現在總共幾天了？",
+                                options: ["1740天", "1687天", "1314天"],
+                                answer: "1740天",
+                                feedback: "沒錯！1740天每一天都是最棒的。"
+                            },
+                            {
+                                question: "我最喜歡你的哪個優點？",
+                                options: ["搞怪的脾氣", "溫柔的心", "全部都是"],
+                                answer: "全部都是",
+                                feedback: "還用問嗎？當然是全部都喜歡！"
+                            }
+                        ];
+                        // --- 題目修改結束 ---
+
+                        const quizContainer = document.getElementById('quiz-container');
+                        const questionText = document.getElementById('question-text');
+                        const optionsContainer = document.getElementById('options-container');
+                        const feedbackText = document.getElementById('feedback-text');
+                        const quizResults = document.getElementById('quiz-results');
+
+                        let currentQuestionIndex = 0;
+                        let score = 0;
+
+                        function showQuestion(index) {
+                            // Clear previous content
+                            optionsContainer.innerHTML = '';
+                            feedbackText.textContent = '';
+                            quizResults.classList.add('hidden');
+                            optionsContainer.style.display = 'block';
+
+
+                            const q = quizQuestions[index];
+                            questionText.textContent = q.question;
+
+                            q.options.forEach(option => {
+                                const button = document.createElement('button');
+                                button.textContent = option;
+                                button.classList.add('quiz-option');
+                                button.addEventListener('click', () => selectAnswer(button, option, q));
+                                optionsContainer.appendChild(button);
+                            });
+                        }
+
+                        function selectAnswer(button, selectedOption, questionData) {
+                            // Disable all buttons
+                            const allOptions = optionsContainer.querySelectorAll('.quiz-option');
+                            allOptions.forEach(btn => btn.disabled = true);
+
+                            if (selectedOption === questionData.answer) {
+                                button.classList.add('correct');
+                                feedbackText.textContent = questionData.feedback;
+                                feedbackText.style.color = '#5d9b6a';
+                                score++;
+                            } else {
+                                button.classList.add('incorrect');
+                                feedbackText.textContent = '答錯了，再想想！';
+                                feedbackText.style.color = '#b56576';
+                                // Highlight the correct answer
+                                allOptions.forEach(btn => {
+                                    if (btn.textContent === questionData.answer) {
+                                        btn.classList.add('correct');
+                                    }
+                                });
+                            }
+
+                            // Move to next question or show results
+                            setTimeout(() => {
+                                currentQuestionIndex++;
+                                if (currentQuestionIndex < quizQuestions.length) {
+                                    showQuestion(currentQuestionIndex);
+                                } else {
+                                    showResults();
+                                }
+                            }, 2000);
+                        }
+                        
+                        function showResults() {
+                            questionText.textContent = '測驗結束！';
+                            optionsContainer.style.display = 'none';
+                            feedbackText.textContent = '';
+                            
+                            let resultMessage = '';
+                            if (score === quizQuestions.length) {
+                                resultMessage = `<h3>太神啦！${score}/${quizQuestions.length} 全對！</h3><p>看來你真的很懂我，不愧是我的靈魂伴侶！</p>`;
+                            } else if (score >= quizQuestions.length / 2) {
+                                resultMessage = `<h3>不錯喔！答對了 ${score}/${quizQuestions.length} 題！</h3><p>我們的默契還是很好的嘛！</p>`;
+                            } else {
+                                resultMessage = `<h3>答對了 ${score}/${quizQuestions.length} 題...</h3><p>看來我們需要多點時間複習一下我們的回憶喔！</p>`;
+                            }
+                            quizResults.innerHTML = resultMessage;
+                            quizResults.classList.remove('hidden');
+                        }
+
+                        showQuestion(currentQuestionIndex);
+                    }
                 },
                 21: {
                     title: "我們的故事片段",
