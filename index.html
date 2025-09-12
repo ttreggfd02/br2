@@ -328,13 +328,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             // --- 密碼設定 ---
             // 請在這裡修改成你想設定的密碼
-            const PASSWORD = 'chen09';
+            const PASSWORD = 'chen0927';
             // --- 設定結束 ---
 
             // --- 開發設定 ---
             // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
             // 正式發佈給對方前，請務必改回 false！
-            const UNLOCK_ALL_DATES = true;
+            const UNLOCK_ALL_DATES = false;
             // --- 設定結束 ---
             
             // --- 圖片路徑管理 ---
@@ -817,7 +817,7 @@
                                 question: "第一次一起慶祝生日是在哪個餐廳？",
                                 options: ["TBS剔邦饈", "雅竹鐵板料理", "樂葵法式鐵板燒"],
                                 answer: "雅竹鐵板料理",
-                                feedback: "答對了！那是我第一次吃高級鐵板燒超級開心！"
+                                feedback: "答對了！那是我第一次吃高級鐵板燒超級開心,謝謝寶寶的用心！"
                             },
                             {
                                 question: "從我們交往的第一天到現在總共幾天了？",
@@ -903,11 +903,11 @@
                             
                             let resultMessage = '';
                             if (score === quizQuestions.length) {
-                                resultMessage = `<h3>太神啦！${score}/${quizQuestions.length} 全對！</h3><p>看來你真的很懂我，不愧是我的靈魂伴侶！</p>`;
+                                resultMessage = `<h3>太神啦！${score}/${quizQuestions.length} 全對！</h3><p>看來你真的很記性很好內，不愧是我的靈魂伴侶:)</p>`;
                             } else if (score >= quizQuestions.length / 2) {
-                                resultMessage = `<h3>不錯喔！答對了 ${score}/${quizQuestions.length} 題！</h3><p>我們的默契還是很好的嘛！</p>`;
+                                resultMessage = `<h3>不錯喔！答對了 ${score}/${quizQuestions.length} 題！</h3><p>我們的默契還是很不錯的嘛！</p>`;
                             } else {
-                                resultMessage = `<h3>答對了 ${score}/${quizQuestions.length} 題...</h3><p>看來我們需要多點時間複習一下我們的回憶喔！</p>`;
+                                resultMessage = `<h3>答對了 ${score}/${quizQuestions.length} 題...</h3><p>看來需要多點時間複習一下我們的回憶喔ＱＱ！</p>`;
                             }
                             quizResults.innerHTML = resultMessage;
                             quizResults.classList.remove('hidden');
