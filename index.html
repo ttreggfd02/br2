@@ -917,8 +917,120 @@
                     }
                 },
                 21: {
-                    title: "我們的故事片段",
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">這個片段，讓我想起...</h3><p>每次看到這個片段，都會想起我們一起大笑的日子。</p><div class="aspect-w-16 aspect-h-9 mt-4"><iframe src="${linkPaths.day19_video}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full rounded-lg"></iframe></div>`
+                    title: "默契大考驗Part2！!",
+                    content: `
+                        <div id="quiz-container">
+                            <h3 id="question-text" class="text-2xl font-bold accent-color mb-6 text-center"></h3>
+                            <div id="options-container" class="space-y-2"></div>
+                            <p id="feedback-text" class="text-center mt-4 h-6"></p>
+                            <div id="quiz-results" class="hidden text-center"></div>
+                        </div>
+                    `,
+                    gameInit: () => {
+                        // --- 在這裡修改你的題目 ---
+                        const quizQuestions = [
+                            {
+                                question: "說到刺青會想到什麼",
+                                options: ["腳寶", "腳貓", "腳鼻"],
+                                answer: "腳寶",
+                                feedback: "我要刺一個腳寶在胸前"
+                            },
+                            {
+                                question: "你穿過幾雙530？",
+                                options: ["3雙", "4雙", "2雙"],
+                                answer: "3雙",
+                                feedback: "但也破了3雙530 :P。"
+                            },
+                            {
+                                question: "我在想什麼？",
+                                options: ["我不騙你", "喉嚨裡有細菌", "吳極限"],
+                                answer: "喉嚨裡有細菌",
+                                feedback: "每天都要看湘荷妹妹耍可愛！"
+                            }
+                        ];
+                        // --- 題目修改結束 ---
+
+                        const quizContainer = document.getElementById('quiz-container');
+                        const questionText = document.getElementById('question-text');
+                        const optionsContainer = document.getElementById('options-container');
+                        const feedbackText = document.getElementById('feedback-text');
+                        const quizResults = document.getElementById('quiz-results');
+
+                        let currentQuestionIndex = 0;
+                        let score = 0;
+
+                        function showQuestion(index) {
+                            // Clear previous content
+                            optionsContainer.innerHTML = '';
+                            feedbackText.textContent = '';
+                            quizResults.classList.add('hidden');
+                            optionsContainer.style.display = 'block';
+
+
+                            const q = quizQuestions[index];
+                            questionText.textContent = q.question;
+
+                            q.options.forEach(option => {
+                                const button = document.createElement('button');
+                                button.textContent = option;
+                                button.classList.add('quiz-option');
+                                button.addEventListener('click', () => selectAnswer(button, option, q));
+                                optionsContainer.appendChild(button);
+                            });
+                        }
+
+                        function selectAnswer(button, selectedOption, questionData) {
+                            // Disable all buttons
+                            const allOptions = optionsContainer.querySelectorAll('.quiz-option');
+                            allOptions.forEach(btn => btn.disabled = true);
+
+                            if (selectedOption === questionData.answer) {
+                                button.classList.add('correct');
+                                feedbackText.textContent = questionData.feedback;
+                                feedbackText.style.color = '#5d9b6a';
+                                score++;
+                            } else {
+                                button.classList.add('incorrect');
+                                feedbackText.textContent = '咦真的嗎？，再想想！';
+                                feedbackText.style.color = '#b56576';
+                                // Highlight the correct answer
+                                allOptions.forEach(btn => {
+                                    if (btn.textContent === questionData.answer) {
+                                        btn.classList.add('correct');
+                                    }
+                                });
+                            }
+
+                            // Move to next question or show results
+                            setTimeout(() => {
+                                currentQuestionIndex++;
+                                if (currentQuestionIndex < quizQuestions.length) {
+                                    showQuestion(currentQuestionIndex);
+                                } else {
+                                    showResults();
+                                }
+                            }, 2000);
+                        }
+                        
+                        function showResults() {
+                            questionText.textContent = '測驗結束！';
+                            optionsContainer.style.display = 'none';
+                            feedbackText.textContent = '';
+                            
+                            let resultMessage = '';
+                            if (score === quizQuestions.length) {
+                                resultMessage = `<h3>哇嗚！${score}/${quizQuestions.length} 全對優！</h3><p>給你100昏:)</p>`;
+                            } else if (score >= quizQuestions.length / 2) {
+                                resultMessage = `<h3>不錯喔！答對了 ${score}/${quizQuestions.length} 題！</h3><p>默契UPUP！</p>`;
+                            } else {
+                                resultMessage = `<h3>答對 ${score}/${quizQuestions.length} 題...</h3><p>下次偷偷寄考古題給你！</p>`;
+                            }
+                            quizResults.innerHTML = resultMessage;
+                            quizResults.classList.remove('hidden');
+                        }
+
+                        showQuestion(currentQuestionIndex);
+                    }
                 },
                 22: {
                     title: "週一能量補給",
