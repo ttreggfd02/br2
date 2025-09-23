@@ -328,13 +328,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             // --- 密碼設定 ---
             // 請在這裡修改成你想設定的密碼
-            const PASSWORD = 'chen0927';
+            const PASSWORD = 'chen09';
             // --- 設定結束 ---
 
             // --- 開發設定 ---
             // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
             // 正式發佈給對方前，請務必改回 false！
-            const UNLOCK_ALL_DATES = false;
+            const UNLOCK_ALL_DATES = true;
             // --- 設定結束 ---
             
             // --- 圖片路徑管理 ---
@@ -346,6 +346,13 @@
                 day11_right: 'image/0910.png',
                 day17_puzzle: 'image/20220501_173850_Original.jpeg',
                 day25_map: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡地圖',
+                day25_1: 'image/day25_1.jpg',
+                day25_2: 'image/day25_2.jpg',
+                day25_3: 'image/day25_3.jpg',
+                day25_4: 'image/day25_4.jpg',
+                day25_5: 'image/day25_5.jpg',
+                day25_6: 'image/day25_6.jpg',
+                day25_7: 'image/day25_7.jpg',
                 day28_photo: 'https://placehold.co/600x400/1b263b/e0e1dd?text=一年前的照片',
                 day30_memory: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡回憶',
                 giftBox: 'image/IMG_7617.jpeg'
@@ -1047,8 +1054,54 @@
                     content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">跑腿我最行券</h4><p class="text-lg mb-6">突然想喝手搖飲？發現餅乾吃完了？憑此券可召喚「專屬外送員」出動一次！</p></div>`
                 },
                 25: {
-                    title: "行前預告：我們的冒險地圖",
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 1</h3><p>我們的冒險即將啟程！猜猜看，我最期待的行程是哪一個？</p><img src="${imagePaths.day25_map}" class="w-full rounded-lg mt-4">`
+                    title: "福岡冒險地圖",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 1</h3>
+                        <p>我們的冒險即將啟程！快速回顧一下這次的冒險地圖吧！</p>
+                        <div id="day25-flash-container" class="flash-image-container mt-4">
+                            </div>
+                    `,
+                    gameInit: () => {
+                        const container = document.getElementById('day25-flash-container');
+                        if (!container) return;
+                
+                        // 整理所有要播放的圖片路徑
+                        const day25Images = [
+                            imagePaths.day25_1, imagePaths.day25_2, imagePaths.day25_3,
+                            imagePaths.day25_4, imagePaths.day25_5, imagePaths.day25_6,
+                            imagePaths.day25_7
+                        ];
+                
+                        // 為每張圖片建立一個 <img> 元素
+                        day25Images.forEach((src, index) => {
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.classList.add('flash-image');
+                            img.alt = `Slide ${index + 1}`;
+                            container.appendChild(img);
+                        });
+                
+                        const images = container.querySelectorAll('.flash-image');
+                        let currentIndex = 0;
+                
+                        function showNextImage() {
+                            // 隱藏上一張圖片
+                            if (images.length > 0) {
+                                 const prevIndex = (currentIndex - 1 + images.length) % images.length;
+                                 images[prevIndex].classList.remove('visible');
+                            }
+                            
+                            // 顯示目前圖片
+                            images[currentIndex].classList.add('visible');
+                            
+                            // 更新到下一張
+                            currentIndex = (currentIndex + 1) % images.length;
+                        }
+                
+                        // 開始播放
+                        showNextImage(); // 立刻顯示第一張
+                        setInterval(showNextImage, 800); // 每 0.8 秒切換一張，您可以調整這個數字
+                    }
                 },
                 26: {
                     title: "糸島的勇者任務卡",
