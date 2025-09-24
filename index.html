@@ -1375,12 +1375,12 @@
                         setTimeout(closeBlessings, 2000); // 2秒後自動關閉
                         return;
                     }
-                    videoPlaylist.textContent = `正在播放祝福 ${index + 1} / ${videoSources.length}`;
-                    blessingsVideo.src = videoSources[index];
-                    blessingsVideo.play().catch(e => {
-                        console.error("影片播放失敗:", e);
-                        videoPlaylist.textContent = `影片 ${index + 1} 載入失敗，請檢查路徑。`;
-                    });
+                    //videoPlaylist.textContent = `正在播放祝福 ${index + 1} / ${videoSources.length}`;
+                    //blessingsVideo.src = videoSources[index];
+                    //blessingsVideo.play().catch(e => {
+                    //    console.error("影片播放失敗:", e);
+                    //    videoPlaylist.textContent = `影片 ${index + 1} 載入失敗，請檢查路徑。`;
+                    //});
                 }
                 
                 // 移除舊的監聽器，避免重複綁定
