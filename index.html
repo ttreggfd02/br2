@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>給最愛的你</title>
-    <!-- 建議：將圖示上傳到 Imgur 或 GitHub 專案資料夾中，然後使用直接連結 -->
+    <title>JennyOnly</title>
     <link rel="apple-touch-icon" href="image/icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
@@ -191,7 +190,6 @@
             align-items: center;
             background-color: #415a77;
             color: #e0e1dd;
-            visibility: hidden; /* Hide prize initially */
         }
         #scratch-card {
             position: absolute;
@@ -202,11 +200,78 @@
             cursor: crosshair;
             z-index: 1;
         }
+        #puzzle-container {
+            width: 302px; /* 拼圖塊寬度 100px * 3 + 邊框 2px */
+            height: 401px; /* 拼圖塊高度 133px * 3 + 邊框 2px */
+            margin: auto;
+            border: 1px solid #778da9;
+        }
+        .puzzle-piece {
+            width: 100px;  /* 寬度改為 100px */
+            height: 133px; /* 高度改為 133px */
+            border: 1px solid #fff;
+            cursor: pointer;
+            float: left; /* 新增這行讓拼圖塊並排 */
+            background-size: 300px 399px; /* 背景圖總尺寸 */
+        }
+        .puzzle-piece.selected {
+            border: 2px solid #e0b1cb;
+            opacity: 0.7;
+        }
+        /* --- Day 20 Quiz Styles --- */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background-color: #415a77;
+            transition: all 0.2s ease-in-out;
+        }
+        .quiz-option:hover {
+            background-color: #778da9;
+            border-color: #e0b1cb;
+        }
+        .quiz-option.correct {
+            background-color: #5d9b6a; /* Green for correct */
+            color: white;
+        }
+        .quiz-option.incorrect {
+            background-color: #b56576; /* Red for incorrect */
+            color: white;
+        }
+        .quiz-option:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        
+        /* --- Day 25 Flash Effect --- */
+        .flash-image-container {
+            position: relative;
+            width: 100%;
+            height: 20rem; /* 您可以調整這個高度 */
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .flash-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 確保圖片完整顯示不變形 */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out; /* 淡入淡出動畫 */
+        }
+        .flash-image.visible {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
     
-    <!-- Password Gate -->
     <div id="password-gate">
         <div class="w-full max-w-xs p-8 bg-gray-800 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold text-center accent-color mb-6">請輸入密碼</h2>
@@ -217,7 +282,6 @@
     </div>
 
 
-    <!-- Landing Page -->
     <div id="landing-page">
         <h1 class="text-4xl md:text-7xl font-bold text-white mb-6 text-center animate-pulse">給我的最愛</h1>
         <p class="text-xl md:text-2xl text-gray-300 mb-12 text-center">九月的每一天，都為你準備了一個小秘密</p>
@@ -226,21 +290,18 @@
         </button>
     </div>
 
-    <!-- Surprises Calendar -->
     <div id="surprise-container" class="hidden p-4 md:p-8">
         <h2 class="text-3xl md:text-5xl font-bold accent-color mb-8 text-center">九月驚喜日曆</h2>
         <div id="calendar-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 max-w-6xl mx-auto"></div>
     </div>
 
-    <!-- Modal for Daily Surprise -->
     <div id="surprise-modal" class="modal">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
+            <span class="close-button">×</span>
             <div id="modal-body"></div>
         </div>
     </div>
 
-    <!-- Fireworks container -->
     <div id="fireworks-container" class="hidden fixed top-0 left:0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
         <canvas id="fireworks-canvas"></canvas>
         <div id="birthday-title" class="px-4">
@@ -256,27 +317,33 @@
         </div>
     </div>
     
-    <!-- Monday Motivation Container -->
     <div id="monday-motivation-container" class="hidden fixed top-0 left:0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
-        <span class="close-button absolute top-8 right-8 text-2xl">&times;</span>
+        <span class="close-button absolute top-8 right-8 text-2xl">×</span>
         <div id="monday-title" class="px-4">
             <h1 class="text-white text-4xl md:text-6xl font-bold" style="text-shadow: 0 0 20px #a0c4ff;"></h1>
         </div>
         <div id="monday-content-wrapper" class="px-4 opacity-0 w-full max-w-3xl">
-            <!-- Monday content will be injected here -->
-        </div>
+            </div>
     </div>
     
-    <!-- Gift Reveal Container -->
     <div id="gift-reveal-container">
-         <span class="close-button absolute top-8 right-8 text-2xl">&times;</span>
+         <span class="close-button absolute top-8 right-8 text-2xl">×</span>
          <div id="gift-box">
              <img src="" alt="禮物箱" class="w-48 h-48">
              <p class="text-center mt-4 text-lg animate-pulse">點我打開</p>
          </div>
          <div id="gift-result" class="text-center">
-            <!-- Gift result will be injected here -->
-         </div>
+            </div>
+    </div>
+    
+    <div id="blessings-container" class="hidden fixed top-0 left-0 w-full h-full bg-black z-50 flex-col justify-center items-center p-4">
+        <h2 id="blessings-title" class="text-3xl md:text-4xl font-bold mb-4 accent-color text-center">來自遠方的祝福</h2>
+        <div id="video-player-wrapper" class="w-full max-w-3xl aspect-video bg-black rounded-lg">
+            <video id="blessings-video" class="w-full h-full" controls>
+                </video>
+        </div>
+        <p id="video-playlist" class="text-gray-400 mt-2 h-6"></p>
+        <button id="close-blessings" class="absolute top-4 right-4 text-3xl text-white hover:text-gray-400">×</button>
     </div>
 
 
@@ -298,21 +365,32 @@
             const imagePaths = {
                 landingBackground: 'https://placehold.co/1920x1080/0d1b2a/e0e1dd?text=我們的故事',
                 day2_blurred: 'image/IMG_7615.jpeg',
-                day11_left: 'https://placehold.co/400x300/1b263b/e0e1dd?text=圖+1',
-                day11_right: 'https://placehold.co/400x300/1b263b/e0e1dd?text=圖+2',
-                day17_puzzle: 'https://placehold.co/300x300/e0b1cb/0d1b2a?text=回憶',
-                day25_map: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡地圖',
+                day11_left: 'image/IMG_3758.jpeg',
+                day11_right: 'image/0910.png',
+                day17_puzzle: 'image/20220501_173850_Original.jpeg',
+                day25_1: 'image/day25_1.jpeg',
+                day25_2: 'image/day25_2.jpeg',
+                day25_3: 'image/day25_3.jpeg',
+                day25_4: 'image/day25_4.jpeg',
+                day25_5: 'image/day25_5.jpeg',
+                day25_6: 'image/day25_6.jpeg',
+                day25_7: 'image/day25_7.jpeg',
                 day28_photo: 'https://placehold.co/600x400/1b263b/e0e1dd?text=一年前的照片',
                 day30_memory: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡回憶',
                 giftBox: 'image/IMG_7617.jpeg'
             };
             // --- 圖片路徑結束 ---
             
-            // --- 連結管理 ---
+            // --- 連結與影片管理 ---
             const linkPaths = {
-                day19_video: 'https://www.youtube.com/embed/An_r_t_c2sU',
                 day7_spotify: 'https://open.spotify.com/playlist/4cIIUR6AHQsudqNdhOfQN2?si=i04RwpqoSXqXqRdjIf1tyg&pi=CXbAyX0zT-6J6',
-                day26_spotify: 'https://open.spotify.com/'
+                day26_spotify: 'https://open.spotify.com/',
+                // (新增的部分) 請在此處加入您所有祝福影片的路徑
+                day27_videos: [
+                    'recorder/0927_1.mp4',
+                    'recorder/0927_2.mp4',
+                    // 如果有更多影片，請繼續往下加，例如: 'recorder/0927_3.mp4',
+                ]
             };
             // --- 連結管理結束 ---
 
@@ -348,6 +426,8 @@
                         <p id="reveal-answer-text" class="text-center">（點擊圖片揭曉答案）</p>
                         <div id="answer-container" class="hidden text-center mt-4">
                             <p class="text-lg accent-color">2024/02/19 17:30 @ round round</p>
+                            <p class="text-lg accent-color">超喜歡我們的杯杯<3</p>
+                            <p class="text-lg accent-color">可惜現在已經暫停營業了ＱＱ</p>
                         </div>
                     `,
                     gameInit: () => {
@@ -419,10 +499,10 @@
                     }
                 },
                 7: {
-                    title: "我們的故事歌單",
+                    title: "專屬歌單",
                     content: `
                         <h3 class="text-2xl font-bold accent-color mb-4">這首歌，讓我想起...</h3>
-                        <p class="mb-4">我把我們的故事，放進了這張歌單裡。點開來聽聽，看你會先想起哪一段回憶？</p>
+                        <p class="mb-4">我把想說的話，放進了這張歌單裡。點開來聽聽，看看你喜不喜翻？</p>
                         <a href="${linkPaths.day7_spotify}" target="_blank" class="block accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded text-center">點我播放故事歌單 <i class="fab fa-spotify ml-2"></i></a>
                     `
                 },
@@ -430,32 +510,29 @@
                     title: "週一能量補給",
                     type: 'monday',
                     content: `
-                        <h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯熱拿鐵</h3>
+                        <h3 class="text-2xl font-bold accent-color mb-4">本週幸運物：一杯冰美式</h3>
                         <div class="bg-gray-800 p-6 rounded-lg text-center">
                             <i class="fas fa-mug-hot text-6xl text-amber-200 mb-4"></i>
-                            <p class="text-xl">它會在你最需要的時候，給你溫暖和力量。祝你新的一週充滿能量！</p>
+                            <p class="text-xl">它會在你最需要的時候，給你力量。祝你新的一週充滿能量！</p>
                             <div class="my-4">
                                 <p class="mb-2 text-gray-400">也聽聽我想對你說的話：</p>
-                                <audio controls class="w-full">
+                                <audio id="day8-audio" controls class="w-full">
                                     <source src="recorder/day8.m4a" type="audio/mp4">
                                     您的瀏覽器不支援音檔播放。
                                 </audio>
-                                <p id="audio-error" class="text-red-400 text-sm mt-2 hidden">無法載入錄音檔，請確認 recorder/day8.m4a 檔案已上傳且路徑正確。</p>
                             </div>
-                            <hr class="my-4 border-gray-600">
-                            <p>本週挑戰預告：「回憶復刻挑戰」，我們可以先來找找要復刻哪張照片喔！</p>
                         </div>
                     `,
                     gameInit: () => {
                         const audio = document.getElementById('day8-audio');
                         if (audio) {
-                            const errorMsg = document.getElementById('audio-error');
-                            const source = audio.querySelector('source');
-                            if (source) {
-                                source.addEventListener('error', function() {
-                                    errorMsg.classList.remove('hidden');
+                            // The monday-motivation animation takes 4.5s (3s for title, 1.5s for content)
+                            // We try to play the audio after the content is visible.
+                            setTimeout(() => {
+                                audio.play().catch(e => {
+                                    console.log("瀏覽器可能已阻止自動播放，需要使用者互動。");
                                 });
-                            }
+                            }, 1500);
                         }
                     }
                 },
@@ -464,8 +541,45 @@
                     content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">氣噗噗消氣卡</h4><p class="text-lg mb-6">當你生氣時，出示此卡，我會立刻停止爭辯，並給你一個大大的擁抱讓你消氣。</p></div>`
                 },
                 10: {
-                    title: "深夜食堂指定卷",
-                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">深夜食堂指定卷</h4><p class="text-lg mb-6">不管多晚，只要你想吃宵夜，憑此券可指定一樣我能做出來的料理！</p></div>`
+                    title: "幸運刮刮樂",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">刮開今天的幸運！</h3>
+                        <div id="scratch-container">
+                            <div id="scratch-prize"><p class="text-2xl">🎉 獎品：陳傑憲獎金1000元！ 🎉</p></div>
+                            <canvas id="scratch-card" width="400" height="100"></canvas>
+                        </div>
+                    `,
+                    gameInit: () => {
+                        const canvas = document.getElementById('scratch-card');
+                        const container = document.getElementById('scratch-container');
+                        
+                        canvas.width = container.clientWidth;
+                        canvas.height = container.clientHeight;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#778da9';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                        let isDrawing = false;
+                        const scratch = (e) => {
+                            if (!isDrawing) return;
+                            e.preventDefault();
+                            const rect = canvas.getBoundingClientRect();
+                            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                            ctx.globalCompositeOperation = 'destination-out';
+                            ctx.beginPath();
+                            ctx.arc(x, y, 15, 0, Math.PI * 2);
+                            ctx.fill();
+                        };
+
+                        canvas.addEventListener('mousedown', () => isDrawing = true);
+                        canvas.addEventListener('mouseup', () => isDrawing = false);
+                        canvas.addEventListener('mousemove', scratch);
+                        canvas.addEventListener('touchstart', () => isDrawing = true, { passive: false });
+                        canvas.addEventListener('touchend', () => isDrawing = false);
+                        canvas.addEventListener('touchmove', scratch, { passive: false });
+                    }
                 },
                 11: {
                     title: "大家來找碴",
@@ -473,35 +587,24 @@
                         <h3 class="text-2xl font-bold accent-color mb-4">你找得到 3 個不同的地方嗎？</h3>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <svg viewBox="0 0 100 80" class="rounded-lg bg-sky-300">
-                                    <circle cx="85" cy="15" r="10" fill="yellow"/>
-                                    <rect y="60" width="100" height="20" fill="green"/>
-                                    <path d="M 20 60 L 20 40 L 40 40 L 40 60 Z" fill="brown"/>
-                                    <path d="M 15 40 L 45 40 L 30 25 Z" fill="red"/>
-                                    <path d="M 50 50 Q 60 40 70 50 T 90 50" fill="none" stroke="white" stroke-width="2"/>
-                                </svg>
+                                <img src="${imagePaths.day11_left}" alt="圖片左" class="w-full rounded-lg">
                             </div>
                             <div id="spot-the-diff-container">
-                                <svg viewBox="0 0 100 80" class="rounded-lg bg-sky-300">
-                                    <circle cx="85" cy="15" r="10" fill="yellow"/>
-                                    <path d="M 82 13 C 84 15, 86 15, 88 13" stroke="black" fill="none" stroke-linecap="round"/>
-                                    <rect y="60" width="100" height="20" fill="green"/>
-                                    <path d="M 20 60 L 20 40 L 40 40 L 40 60 Z" fill="blue"/>
-                                    <path d="M 15 40 L 45 40 L 30 25 Z" fill="red"/>
-                                    <path d="M 50 50 Q 60 40 70 50 T 90 50" fill="none" stroke="white" stroke-width="2"/>
-                                    <path d="M 5 10 L 10 15 L 15 10" stroke="black" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-                                </svg>
-                                <!-- Different areas (top, left, width, height in %) -->
-                                <div class="diff-circle" data-id="1" style="top:12.5%; left:80%; width:12.5%; height:12.5%;"></div>
-                                <div class="diff-circle" data-id="2" style="top:50%; left:25%; width:25%; height:25%;"></div>
-                                <div class="diff-circle" data-id="3" style="top:10%; left:2.5%; width:15%; height:10%;"></div>
+                                <img src="${imagePaths.day11_right}" alt="圖片右" class="w-full rounded-lg">
+                                
+                                <div class="diff-circle" style="top: 12%; left: 70%; width: 8%; height: 13%;"></div>
+                                
+                                <div class="diff-circle" style="top: 82%; left: 42%; width: 18%; height: 20%;"></div>
+                                
+                                <div class="diff-circle" style="top: 70%; left: 20%; width: 18%; height: 10%;"></div>
+                
                             </div>
                         </div>
                         <p id="diff-win" class="text-center mt-4 hidden text-xl accent-color">太厲害了，全部找到了！</p>
                     `,
                     gameInit: () => {
                         let foundCount = 0;
-                        const totalDiffs = 3;
+                        const totalDiffs = 3; // 總共有 3 個不同點
                         const winMessage = document.getElementById('diff-win');
                         document.querySelectorAll('.diff-circle').forEach(circle => {
                             circle.addEventListener('click', (e) => {
@@ -527,7 +630,7 @@
                         <div class="coin-container mb-6 flex justify-center">
                             <div id="coin" class="coin">
                                 <div class="face heads">看夜景</div>
-                                <div class="face tails">看電影</div>
+                                <div class="face tails">吃好料</div>
                             </div>
                         </div>
                         <button id="flipButton" class="w-full accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded-lg disabled:bg-gray-500">拋硬幣</button>
@@ -560,7 +663,7 @@
                                 if (isHeads) {
                                     resultText.textContent = '結果：看夜景！';
                                 } else {
-                                    resultText.textContent = '結果：看電影！';
+                                    resultText.textContent = '結果：吃好料！';
                                 }
                                 flipButton.disabled = false;
                                 coinContainer.classList.remove('is-tossing');
@@ -569,10 +672,10 @@
                     }
                 },
                 14: {
-                    title: "碼錶挑戰",
+                    title: "你是100分",
                     content: `
                         <div class="p-8 text-center">
-                            <p class="text-gray-400 mb-8">數字會一直跑，你的目標是精準地在碼錶顯示為 **100** 時按下按鈕！</p>
+                            <p class="text-gray-400 mb-8">數字會一直跑，你的目標是精準地在碼錶顯示為"100"時按下按鈕！</p>
                             <div id="timer-display" class="mb-8 text-6xl font-bold text-white">000</div>
                             <div>
                                 <button id="mainButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105">
@@ -621,8 +724,11 @@
                                 mainButton.classList.add('bg-blue-500', 'hover:bg-blue-600');
                                 
                                 if (count === 100) {
-                                    resultMessage.textContent = '恭喜你！完美停在100！🎉';
+                                    resultMessage.textContent = '恭喜你！完美停在100！恭喜獲得1000元獎勵金！🎉';
                                     resultMessage.className = 'mt-8 text-xl font-semibold text-green-400';
+                                } else if ((count >= 95 && count <= 99) || (count >= 101 && count <= 105)) {
+                                    resultMessage.textContent = `很接近了！停在 ${count}，恭喜獲得500元獎勵金！💰`;
+                                    resultMessage.className = 'mt-8 text-xl font-semibold text-yellow-400';    
                                 } else {
                                     resultMessage.textContent = `你停在 ${count}，再試試看！`;
                                     resultMessage.className = 'mt-8 text-xl font-semibold text-red-400';
@@ -633,21 +739,21 @@
                     }
                 },
                 15: {
-                    title: "週一小挑戰",
+                    title: "週一加油站",
                     type: 'monday',
                     openingTitle: '給你力量！',
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">今天的挑戰是...</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-bullseye text-6xl text-red-400 mb-4"></i><p class="text-xl">對今天第一個遇到的同事說早安，並給他一個大大的微笑。完成後，你會發現一整天都順利起來！</p><hr class="my-4 border-gray-600"><p>本週挑戰預告：「一小時外語挑戰」！我們可以先想想要學哪國語言。</p></div>`
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">今天的挑戰是...</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-bullseye text-6xl text-red-400 mb-4"></i><p class="text-xl">對今天第一個遇到的同事說早安，並給他一個大大的微笑。完成後，你會發現一整天都順利起來！</p><hr class="my-4 border-gray-600">/div>`
                 },
                 16: {
                     title: "勇者任務卡 #2",
-                    content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">回憶復刻挑戰</h4><p>任務：找出我們的一張舊合照，這個週末，我們要找到相似的場景和衣服，完美復刻它！</p><hr class="my-2 border-gray-600"><p><strong>獎勵：</strong>成功後，我會把新舊照片沖洗出來，裱在一個「今昔對比」的相框裡，並請你喝杯咖啡！</p></div>`
+                    content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">回憶復刻挑戰</h4><p>任務：找出我們的一張舊合照，這個週末，我們要找到相似の場景和衣服，完美復刻它！</p><hr class="my-2 border-gray-600"><p><strong>獎勵：</strong>成功後，我會把新舊照片沖洗出來，裱在一個「今昔對比」の相框裡，並請你喝杯咖啡！</p></div>`
                 },
                 17: {
                     title: "記憶拼圖",
                     content: `
-                        <h3 class="text-2xl font-bold accent-color mb-4">拼湊我們的回憶</h3>
+                        <h3 class="text-2xl font-bold accent-color mb-4">拼湊回憶</h3>
                         <div id="puzzle-container"></div>
-                        <p id="puzzle-win" class="text-center mt-4 hidden text-xl accent-color">完成了！我們的回憶，一塊都不能少。</p>
+                        <p id="puzzle-win" class="text-center mt-4 hidden text-xl accent-color">完成囉！快樂的回憶，一塊都不能少。</p>
                     `,
                     gameInit: () => {
                         const container = document.getElementById('puzzle-container');
@@ -657,24 +763,33 @@
 
                         let pieces = [];
                         let selected = null;
-                        const correctOrder = [0, 1, 2, 3];
-                        let currentOrder = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
+                        // --- 修改這裡 ---
+                        const gridSize = 3;
+                        const pieceCount = gridSize * gridSize;
+                        const pieceWidth = 100;
+                        const pieceHeight = 133;
+                        const correctOrder = Array.from({length: pieceCount}, (_, i) => i);
+                        let currentOrder = [...correctOrder].sort(() => Math.random() - 0.5);
+                        // --- 修改結束 ---
 
                         const createPieces = () => {
                             container.innerHTML = '';
                             pieces = [];
-                            for (let i = 0; i < 4; i++) {
+                            // --- 修改這裡 ---
+                            for (let i = 0; i < pieceCount; i++) {
                                 const piece = document.createElement('div');
                                 piece.classList.add('puzzle-piece');
+                                piece.style.backgroundImage = `url(${imagePaths.day17_puzzle})`;
                                 const originalIndex = currentOrder[i];
-                                const row = Math.floor(originalIndex / 2);
-                                const col = originalIndex % 2;
-                                piece.style.backgroundPosition = `${-col * 150}px ${-row * 150}px`;
+                                const row = Math.floor(originalIndex / gridSize);
+                                const col = originalIndex % gridSize;
+                                piece.style.backgroundPosition = `${-col * pieceWidth}px ${-row * pieceHeight}px`;
                                 piece.dataset.index = i;
                                 piece.addEventListener('click', onPieceClick);
                                 container.appendChild(piece);
                                 pieces.push(piece);
                             }
+                            // --- 修改結束 ---
                         };
                         
                         const onPieceClick = (e) => {
@@ -687,10 +802,15 @@
                                     const index1 = parseInt(selected.dataset.index);
                                     const index2 = parseInt(piece.dataset.index);
                                     [currentOrder[index1], currentOrder[index2]] = [currentOrder[index2], currentOrder[index1]];
+                                    // 移除 selected class 再重新渲染
+                                    selected.classList.remove('selected');
+                                    selected = null;
                                     createPieces();
+                                } else {
+                                     // 如果點擊同一個，就取消選取
+                                     selected.classList.remove('selected');
+                                     selected = null;
                                 }
-                                selected.classList.remove('selected');
-                                selected = null;
                                 checkWin();
                             }
                         };
@@ -698,6 +818,8 @@
                         const checkWin = () => {
                             if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
                                 winMessage.classList.remove('hidden');
+                                // 移除點擊事件，避免完成後還能操作
+                                pieces.forEach(p => p.removeEventListener('click', onPieceClick));
                             }
                         };
 
@@ -705,66 +827,250 @@
                     }
                 },
                 18: {
-                    title: "愛情刮刮樂",
-                    content: `
-                        <h3 class="text-2xl font-bold accent-color mb-4">刮開今天的幸運！</h3>
-                        <div id="scratch-container">
-                            <div id="scratch-prize"><p class="text-2xl">🎉 獎品：一個溫暖的抱抱！ 🎉</p></div>
-                            <canvas id="scratch-card" width="400" height="100"></canvas>
-                        </div>
-                    `,
-                    gameInit: () => {
-                        const canvas = document.getElementById('scratch-card');
-                        const container = document.getElementById('scratch-container');
-                        const prize = document.getElementById('scratch-prize');
-                        
-                        prize.style.visibility = 'visible'; // Make sure it's visible before we draw on top
-
-                        canvas.width = container.clientWidth;
-                        canvas.height = container.clientHeight;
-
-                        const ctx = canvas.getContext('2d');
-                        ctx.fillStyle = '#778da9';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                        let isDrawing = false;
-                        const scratch = (e) => {
-                            if (!isDrawing) return;
-                            e.preventDefault();
-                            const rect = canvas.getBoundingClientRect();
-                            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-                            const y = (e.clientY || e.touches[0].clientY) - rect.top;
-                            ctx.globalCompositeOperation = 'destination-out';
-                            ctx.beginPath();
-                            ctx.arc(x, y, 15, 0, Math.PI * 2);
-                            ctx.fill();
-                        };
-
-                        canvas.addEventListener('mousedown', () => isDrawing = true);
-                        canvas.addEventListener('mouseup', () => isDrawing = false);
-                        canvas.addEventListener('mousemove', scratch);
-                        canvas.addEventListener('touchstart', () => isDrawing = true, { passive: false });
-                        canvas.addEventListener('touchend', () => isDrawing = false);
-                        canvas.addEventListener('touchmove', scratch, { passive: false });
-                    }
+                    title: "深夜外送指定卷",
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">深夜食堂指定卷</h4><p class="text-lg mb-6">不管多晚，只要你想吃宵夜，憑此券可任意指定一樣叫到的宵夜！</p></div>`
                 },
                 19: {
-                    title: "我們的故事片段",
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">這個片段，讓我想起...</h3><p>每次看到這個片段，都會想起我們一起大笑的日子。</p><div class="aspect-w-16 aspect-h-9 mt-4"><iframe src="${linkPaths.day19_video}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full rounded-lg"></iframe></div>`
-                },
-                20: {
                     title: "勇者任務卡 #3",
                     content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">一小時外語挑戰</h4><p>任務：選一種我們都完全不會的語言，用App一起學習一小時。結束後，要用學到的單字進行一段三分鐘的對話。</p><hr class="my-2 border-gray-600"><p><strong>獎勵：</strong>挑戰成功後，我會訂那個國家的料理當作我們的晚餐！</p></div>`
                 },
+                20: {
+                    title: "默契大考驗！",
+                    content: `
+                        <div id="quiz-container">
+                            <h3 id="question-text" class="text-2xl font-bold accent-color mb-6 text-center"></h3>
+                            <div id="options-container" class="space-y-2"></div>
+                            <p id="feedback-text" class="text-center mt-4 h-6"></p>
+                            <div id="quiz-results" class="hidden text-center"></div>
+                        </div>
+                    `,
+                    gameInit: () => {
+                        // --- 在這裡修改你的題目 ---
+                        const quizQuestions = [
+                            {
+                                question: "第一次一起慶祝生日是在哪個餐廳？",
+                                options: ["TBS剔邦饈", "雅竹鐵板料理", "樂葵法式鐵板燒"],
+                                answer: "雅竹鐵板料理",
+                                feedback: "答對了！那是我第一次吃高級鐵板燒超級開心,謝謝寶寶的用心！"
+                            },
+                            {
+                                question: "從我們交往的第一天到現在總共幾天了？",
+                                options: ["1740天", "1687天", "1314天"],
+                                answer: "1740天",
+                                feedback: "沒錯！1740天每一天都是最棒的。"
+                            },
+                            {
+                                question: "我最喜歡你的哪個優點？",
+                                options: ["搞怪的脾氣", "溫柔的心", "全部都是"],
+                                answer: "全部都是",
+                                feedback: "還用問嗎？當然是全部都喜歡！"
+                            }
+                        ];
+                        // --- 題目修改結束 ---
+
+                        const quizContainer = document.getElementById('quiz-container');
+                        const questionText = document.getElementById('question-text');
+                        const optionsContainer = document.getElementById('options-container');
+                        const feedbackText = document.getElementById('feedback-text');
+                        const quizResults = document.getElementById('quiz-results');
+
+                        let currentQuestionIndex = 0;
+                        let score = 0;
+
+                        function showQuestion(index) {
+                            // Clear previous content
+                            optionsContainer.innerHTML = '';
+                            feedbackText.textContent = '';
+                            quizResults.classList.add('hidden');
+                            optionsContainer.style.display = 'block';
+
+
+                            const q = quizQuestions[index];
+                            questionText.textContent = q.question;
+
+                            q.options.forEach(option => {
+                                const button = document.createElement('button');
+                                button.textContent = option;
+                                button.classList.add('quiz-option');
+                                button.addEventListener('click', () => selectAnswer(button, option, q));
+                                optionsContainer.appendChild(button);
+                            });
+                        }
+
+                        function selectAnswer(button, selectedOption, questionData) {
+                            // Disable all buttons
+                            const allOptions = optionsContainer.querySelectorAll('.quiz-option');
+                            allOptions.forEach(btn => btn.disabled = true);
+
+                            if (selectedOption === questionData.answer) {
+                                button.classList.add('correct');
+                                feedbackText.textContent = questionData.feedback;
+                                feedbackText.style.color = '#5d9b6a';
+                                score++;
+                            } else {
+                                button.classList.add('incorrect');
+                                feedbackText.textContent = '答錯了，再想想！';
+                                feedbackText.style.color = '#b56576';
+                                // Highlight the correct answer
+                                allOptions.forEach(btn => {
+                                    if (btn.textContent === questionData.answer) {
+                                        btn.classList.add('correct');
+                                    }
+                                });
+                            }
+
+                            // Move to next question or show results
+                            setTimeout(() => {
+                                currentQuestionIndex++;
+                                if (currentQuestionIndex < quizQuestions.length) {
+                                    showQuestion(currentQuestionIndex);
+                                } else {
+                                    showResults();
+                                }
+                            }, 2000);
+                        }
+                        
+                        function showResults() {
+                            questionText.textContent = '測驗結束！';
+                            optionsContainer.style.display = 'none';
+                            feedbackText.textContent = '';
+                            
+                            let resultMessage = '';
+                            if (score === quizQuestions.length) {
+                                resultMessage = `<h3>太神啦！${score}/${quizQuestions.length} 全對！</h3><p>看來你真的很記性很好內，不愧是我的靈魂伴侶:)</p>`;
+                            } else if (score >= quizQuestions.length / 2) {
+                                resultMessage = `<h3>不錯喔！答對了 ${score}/${quizQuestions.length} 題！</h3><p>我們的默契還是很不錯的嘛！</p>`;
+                            } else {
+                                resultMessage = `<h3>答對了 ${score}/${quizQuestions.length} 題...</h3><p>看來需要多點時間複習一下我們的回憶喔ＱＱ！</p>`;
+                            }
+                            quizResults.innerHTML = resultMessage;
+                            quizResults.classList.remove('hidden');
+                        }
+
+                        showQuestion(currentQuestionIndex);
+                    }
+                },
                 21: {
-                    title: "擺爛放空通行證",
-                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">擺爛放空通行證</h4><p class="text-lg mb-6">當你覺得不想做任何家事時，可以使用此通行證。那天所有該做的家事都由我包辦！</p></div>`
+                    title: "默契大考驗Part2！!",
+                    content: `
+                        <div id="quiz-container">
+                            <h3 id="question-text" class="text-2xl font-bold accent-color mb-6 text-center"></h3>
+                            <div id="options-container" class="space-y-2"></div>
+                            <p id="feedback-text" class="text-center mt-4 h-6"></p>
+                            <div id="quiz-results" class="hidden text-center"></div>
+                        </div>
+                    `,
+                    gameInit: () => {
+                        // --- 在這裡修改你的題目 ---
+                        const quizQuestions = [
+                            {
+                                question: "說到刺青會想到什麼",
+                                options: ["腳寶", "腳貓", "腳鼻"],
+                                answer: "腳寶",
+                                feedback: "我要刺一個腳寶在胸前"
+                            },
+                            {
+                                question: "你穿過幾雙530？",
+                                options: ["3雙", "4雙", "2雙"],
+                                answer: "3雙",
+                                feedback: "但也破了3雙530 :P。"
+                            },
+                            {
+                                question: "我在想什麼？",
+                                options: ["我不騙你", "喉嚨裡有細菌", "吳極限"],
+                                answer: "喉嚨裡有細菌",
+                                feedback: "每天都要看湘荷妹妹耍可愛！"
+                            }
+                        ];
+                        // --- 題目修改結束 ---
+
+                        const quizContainer = document.getElementById('quiz-container');
+                        const questionText = document.getElementById('question-text');
+                        const optionsContainer = document.getElementById('options-container');
+                        const feedbackText = document.getElementById('feedback-text');
+                        const quizResults = document.getElementById('quiz-results');
+
+                        let currentQuestionIndex = 0;
+                        let score = 0;
+
+                        function showQuestion(index) {
+                            // Clear previous content
+                            optionsContainer.innerHTML = '';
+                            feedbackText.textContent = '';
+                            quizResults.classList.add('hidden');
+                            optionsContainer.style.display = 'block';
+
+
+                            const q = quizQuestions[index];
+                            questionText.textContent = q.question;
+
+                            q.options.forEach(option => {
+                                const button = document.createElement('button');
+                                button.textContent = option;
+                                button.classList.add('quiz-option');
+                                button.addEventListener('click', () => selectAnswer(button, option, q));
+                                optionsContainer.appendChild(button);
+                            });
+                        }
+
+                        function selectAnswer(button, selectedOption, questionData) {
+                            // Disable all buttons
+                            const allOptions = optionsContainer.querySelectorAll('.quiz-option');
+                            allOptions.forEach(btn => btn.disabled = true);
+
+                            if (selectedOption === questionData.answer) {
+                                button.classList.add('correct');
+                                feedbackText.textContent = questionData.feedback;
+                                feedbackText.style.color = '#5d9b6a';
+                                score++;
+                            } else {
+                                button.classList.add('incorrect');
+                                feedbackText.textContent = '咦真的嗎？，再想想！';
+                                feedbackText.style.color = '#b56576';
+                                // Highlight the correct answer
+                                allOptions.forEach(btn => {
+                                    if (btn.textContent === questionData.answer) {
+                                        btn.classList.add('correct');
+                                    }
+                                });
+                            }
+
+                            // Move to next question or show results
+                            setTimeout(() => {
+                                currentQuestionIndex++;
+                                if (currentQuestionIndex < quizQuestions.length) {
+                                    showQuestion(currentQuestionIndex);
+                                } else {
+                                    showResults();
+                                }
+                            }, 2000);
+                        }
+                        
+                        function showResults() {
+                            questionText.textContent = '測驗結束！';
+                            optionsContainer.style.display = 'none';
+                            feedbackText.textContent = '';
+                            
+                            let resultMessage = '';
+                            if (score === quizQuestions.length) {
+                                resultMessage = `<h3>哇嗚！${score}/${quizQuestions.length} 全對優！</h3><p>給你100昏:)</p>`;
+                            } else if (score >= quizQuestions.length / 2) {
+                                resultMessage = `<h3>不錯喔！答對了 ${score}/${quizQuestions.length} 題！</h3><p>默契UPUP！</p>`;
+                            } else {
+                                resultMessage = `<h3>答對 ${score}/${quizQuestions.length} 題...</h3><p>下次偷偷寄考古題給你！</p>`;
+                            }
+                            quizResults.innerHTML = resultMessage;
+                            quizResults.classList.remove('hidden');
+                        }
+
+                        showQuestion(currentQuestionIndex);
+                    }
                 },
                 22: {
                     title: "週一能量補給",
                     type: 'monday',
                     openingTitle: '你是最棒的！',
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">本週幸運色：天空藍</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-cloud text-6xl text-sky-400 mb-4"></i><p class="text-xl">抬頭看看天空，它會帶給你意想不到的好運和靈感。加油！</p><hr class="my-4 border-gray-600"><p>本週挑戰預告：「美食輪盤大冒險」！準備好你的胃，我們要去吃點不一樣的了！</p></div>`
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">本週幸運色：天空藍</h3><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-cloud text-6xl text-sky-400 mb-4"></i><p class="text-xl">再努力幾天我們就要出發福岡囉。加油！</p><hr class="my-4 border-gray-600"></div>`
                 },
                 23: {
                     title: "勇者任務卡 #4",
@@ -772,28 +1078,82 @@
                 },
                 24: {
                     title: "跑腿我最行券",
-                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">跑腿我最行券</h4><p class="text-lg mb-6">突然想喝手搖飲？發現醬油用完了？憑此券可召喚「專屬外送員」出動一次！</p></div>`
+                    content: `<div class="border-4 border-dashed p-8 rounded-lg text-center bg-gray-800" style="border-color: #778da9;"><h4 class="text-3xl font-bold text-white mb-4">跑腿我最行券</h4><p class="text-lg mb-6">突然想喝手搖飲？發現餅乾吃完了？憑此券可召喚「專屬外送員」出動一次！</p></div>`
                 },
                 25: {
-                    title: "行前預告：我們的冒險地圖",
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 1</h3><p>我們的冒險即將啟程！猜猜看，我最期待的行程是哪一個？</p><img src="${imagePaths.day25_map}" class="w-full rounded-lg mt-4">`
+                    title: "福岡冒險地圖",
+                    content: `
+                        <h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 1</h3>
+                        <p>我們的冒險即將啟程！快速回顧一下這次的冒險地圖吧！</p>
+                        <div id="day25-flash-container" class="flash-image-container mt-4">
+                            </div>
+                    `,
+                    gameInit: () => {
+                        const container = document.getElementById('day25-flash-container');
+                        if (!container) return;
+                
+                        // 整理所有要播放的圖片路徑
+                        const day25Images = [
+                            imagePaths.day25_1, imagePaths.day25_2, imagePaths.day25_3,
+                            imagePaths.day25_4, imagePaths.day25_5, imagePaths.day25_6,
+                            imagePaths.day25_7
+                        ];
+                
+                        // 為每張圖片建立一個 <img> 元素
+                        day25Images.forEach((src, index) => {
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.classList.add('flash-image');
+                            img.alt = `Slide ${index + 1}`;
+                            container.appendChild(img);
+                        });
+                
+                        const images = container.querySelectorAll('.flash-image');
+                        let currentIndex = 0;
+                
+                        function showNextImage() {
+                            // 隱藏上一張圖片
+                            if (images.length > 0) {
+                                 const prevIndex = (currentIndex - 1 + images.length) % images.length;
+                                 images[prevIndex].classList.remove('visible');
+                            }
+                            
+                            // 顯示目前圖片
+                            images[currentIndex].classList.add('visible');
+                            
+                            // 更新到下一張
+                            currentIndex = (currentIndex + 1) % images.length;
+                        }
+                
+                        // 開始播放
+                        showNextImage(); // 立刻顯示第一張
+                        const slideshowInterval = setInterval(showNextImage, 800);
+                        
+                        // 當 modal 關閉時，停止輪播，避免背景繼續耗能
+                        const modal = document.getElementById('surprise-modal');
+                        const observer = new MutationObserver((mutations) => {
+                            mutations.forEach((mutation) => {
+                                if (mutation.attributeName === 'style' && modal.style.display === 'none') {
+                                    clearInterval(slideshowInterval);
+                                }
+                            });
+                        });
+                        observer.observe(modal, { attributes: true });
+                    }
                 },
                 26: {
-                    title: "我們的福岡進行曲",
-                    content: `
-                        <h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 2</h3>
-                        <p class="mb-4">我為這次的旅行，偷偷準備了一張專屬歌單。戴上耳機，讓我們在同樣的旋律裡，創造獨一無二的回憶吧！</p>
-                        <a href="${linkPaths.day26_spotify}" target="_blank" class="block accent-bg hover-accent-bg text-white font-bold py-3 px-4 rounded text-center">點我播放福岡專屬歌單 <i class="fab fa-spotify ml-2"></i></a>
-                    `
+                    title: "糸島的勇者任務卡",
+                    content: `<div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">福岡心動週 Day 2：糸島任務</h4><p>任務：請你收集素材並錄製今天系島一天的小短片！</p><hr class="my-2 border-gray-600"><p><strong>獎勵：</strong>啾啾一枚！</p><img src="${imagePaths.day26_itoshima}" class="w-full rounded-lg mt-4"></div>`
                 },
                 27: { title: "生日快樂！", type: 'fireworks' },
                 28: {
                     title: "一年前的今天",
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 4</h3><div class="p-4 text-center"><img src="${imagePaths.day28_photo}" class="w-full rounded-lg mb-4"><p class="text-xl leading-relaxed">「一年前的今天，我們正在為了要去哪裡玩而煩惱。一年後的今天，我們真的在福岡了！」</p></div>`
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 4</h3><div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">便利商店大探險</h4><p>今日任務：找到一家最特別的便利商店，買一瓶從沒喝過的飲料，然後跟我分享！</p></div>`
                 },
                 29: {
                     title: "旅行中的指定任務",
-                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 5</h3><div class="p-4 bg-gray-800 rounded-lg"><h4 class="text-xl font-bold accent-color mb-2">便利商店大探險</h4><p>今日任務：找到一家最特別的便利商店，買一瓶從沒喝過的飲料，然後跟我分享！</p></div>`
+                    
+                    content: `<h3 class="text-2xl font-bold accent-color mb-4">福岡心動週 Day 5</h3><div class="p-4 text-center"><img src="${imagePaths.day28_photo}" class="w-full rounded-lg mb-4"><p class="text-xl leading-relaxed">「一年前的今天，你再跟東京郵筒拍照哈哈哈。一年後的今天，我們換在福岡閑晃！」</p></div>`
                 },
                 30: { 
                     title: "福岡回憶錄", 
@@ -825,6 +1185,12 @@
             const giftResult = document.getElementById('gift-result');
             const giftCloseButton = document.querySelector('#gift-reveal-container .close-button');
             const giftBoxImage = document.querySelector('#gift-box img');
+            
+            // (新增的部分) 取得影片播放器相關元素
+            const blessingsContainer = document.getElementById('blessings-container');
+            const blessingsVideo = document.getElementById('blessings-video');
+            const closeBlessingsButton = document.getElementById('close-blessings');
+            const videoPlaylist = document.getElementById('video-playlist');
             
             // --- Apply Image Paths ---
             document.getElementById('landing-page').style.backgroundImage = `linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('${imagePaths.landingBackground}')`;
@@ -868,6 +1234,7 @@
                 modal.style.display = 'none';
                 mondayContainer.style.display = 'none';
                 giftContainer.style.display = 'none';
+                closeBlessings(); // (新增的部分) 關閉 modal 時也關閉影片
             };
 
             modalCloseButton.addEventListener('click', closeModal);
@@ -878,6 +1245,9 @@
                 if (event.target == modal || event.target == mondayContainer || event.target == giftContainer) {
                     closeModal();
                 }
+                if (event.target == blessingsContainer) { // 點擊影片背景也可以關閉
+                    closeBlessings();
+                }
             });
             fireworksContainer.addEventListener('click', () => {
                 fireworksContainer.classList.add('hidden');
@@ -885,6 +1255,8 @@
                     window.cancelAnimationFrame(animationFrameId);
                     animationFrameId = null;
                 }
+                 // (新增的部分) 如果煙火被手動關閉，也直接顯示祝福影片
+                showBlessings();
             });
 
             // 產生日期卡片
@@ -980,6 +1352,56 @@
                     }, 1500);
                 }, 3000);
             }
+            
+            // (新增的部分) 顯示祝福影片的函式
+            function showBlessings() {
+                // 如果沒有影片，就直接結束
+                if (!linkPaths.day27_videos || linkPaths.day27_videos.length === 0) {
+                    console.log("沒有設定祝福影片。");
+                    return;
+                }
+                
+                blessingsContainer.classList.remove('hidden');
+                blessingsContainer.style.display = 'flex';
+
+                let currentVideoIndex = 0;
+                const videoSources = linkPaths.day27_videos;
+
+                function playVideo(index) {
+                    if (index >= videoSources.length) {
+                        // 所有影片播放完畢
+                        videoPlaylist.textContent = "所有祝福已播放完畢！";
+                        setTimeout(closeBlessings, 2000); // 2秒後自動關閉
+                        return;
+                    }
+                    videoPlaylist.textContent = `正在播放祝福 ${index + 1} / ${videoSources.length}`;
+                    blessingsVideo.src = videoSources[index];
+                    blessingsVideo.play().catch(e => {
+                        console.error("影片播放失敗:", e);
+                        videoPlaylist.textContent = `影片 ${index + 1} 載入失敗，請檢查路徑。`;
+                    });
+                }
+
+                blessingsVideo.removeEventListener('ended', playNextVideo); // 先移除舊的監聽器，避免重複綁定
+                blessingsVideo.addEventListener('ended', playNextVideo);
+
+                function playNextVideo() {
+                    currentVideoIndex++;
+                    playVideo(currentVideoIndex);
+                }
+
+                playVideo(currentVideoIndex);
+            }
+            
+            // (新增的部分) 關閉祝福影片的函式
+            function closeBlessings() {
+                blessingsVideo.pause(); // 暫停影片
+                blessingsVideo.src = ""; // 清空來源，避免背景播放
+                blessingsContainer.style.display = 'none';
+            }
+            
+            closeBlessingsButton.addEventListener('click', closeBlessings);
+
 
             // --- 煙火特效邏輯 ---
             const ctx = canvas.getContext('2d');
@@ -1030,7 +1452,20 @@
 
                 setTimeout(() => {
                     birthdayTitle.style.opacity = 0;
-                    setTimeout(() => personalMessage.style.opacity = 1, 1500);
+                    setTimeout(() => {
+                        personalMessage.style.opacity = 1;
+
+                        // (修改的部分) 等待祝福語句顯示後，自動轉換到影片
+                        setTimeout(() => {
+                            fireworksContainer.classList.add('hidden');
+                            if (animationFrameId) {
+                                window.cancelAnimationFrame(animationFrameId);
+                                animationFrameId = null;
+                            }
+                            showBlessings(); // 呼叫播放祝福影片的函式
+                        }, 4000); // 訊息出現後等待 4 秒
+
+                    }, 1500);
                 }, 3500);
 
                 loop();
@@ -1135,4 +1570,3 @@
     </script>
 </body>
 </html>
-
