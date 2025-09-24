@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JennyOnly</title>
-    <!-- 建議：將圖示上傳到 Imgur 或 GitHub 專案資料夾中，然後使用直接連結 -->
     <link rel="apple-touch-icon" href="image/icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
@@ -247,7 +246,7 @@
             opacity: 0.8;
         }
 
-        /* --- Day 25 Flash Effect (新增的部分) --- */
+        /* --- Day 25 Flash Effect --- */
         .flash-image-container {
             position: relative;
             width: 100%;
@@ -273,7 +272,6 @@
 </head>
 <body>
     
-    <!-- Password Gate -->
     <div id="password-gate">
         <div class="w-full max-w-xs p-8 bg-gray-800 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold text-center accent-color mb-6">請輸入密碼</h2>
@@ -284,7 +282,6 @@
     </div>
 
 
-    <!-- Landing Page -->
     <div id="landing-page">
         <h1 class="text-4xl md:text-7xl font-bold text-white mb-6 text-center animate-pulse">給我的最愛</h1>
         <p class="text-xl md:text-2xl text-gray-300 mb-12 text-center">九月的每一天，都為你準備了一個小秘密</p>
@@ -293,21 +290,18 @@
         </button>
     </div>
 
-    <!-- Surprises Calendar -->
     <div id="surprise-container" class="hidden p-4 md:p-8">
         <h2 class="text-3xl md:text-5xl font-bold accent-color mb-8 text-center">九月驚喜日曆</h2>
         <div id="calendar-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 max-w-6xl mx-auto"></div>
     </div>
 
-    <!-- Modal for Daily Surprise -->
     <div id="surprise-modal" class="modal">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
+            <span class="close-button">×</span>
             <div id="modal-body"></div>
         </div>
     </div>
 
-    <!-- Fireworks container -->
     <div id="fireworks-container" class="hidden fixed top-0 left:0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
         <canvas id="fireworks-canvas"></canvas>
         <div id="birthday-title" class="px-4">
@@ -323,27 +317,33 @@
         </div>
     </div>
     
-    <!-- Monday Motivation Container -->
     <div id="monday-motivation-container" class="hidden fixed top-0 left:0 w-full h-full bg-black z-50 flex justify-center items-center cursor-pointer">
-        <span class="close-button absolute top-8 right-8 text-2xl">&times;</span>
+        <span class="close-button absolute top-8 right-8 text-2xl">×</span>
         <div id="monday-title" class="px-4">
             <h1 class="text-white text-4xl md:text-6xl font-bold" style="text-shadow: 0 0 20px #a0c4ff;"></h1>
         </div>
         <div id="monday-content-wrapper" class="px-4 opacity-0 w-full max-w-3xl">
-            <!-- Monday content will be injected here -->
-        </div>
+            </div>
     </div>
     
-    <!-- Gift Reveal Container -->
     <div id="gift-reveal-container">
-         <span class="close-button absolute top-8 right-8 text-2xl">&times;</span>
+         <span class="close-button absolute top-8 right-8 text-2xl">×</span>
          <div id="gift-box">
              <img src="" alt="禮物箱" class="w-48 h-48">
              <p class="text-center mt-4 text-lg animate-pulse">點我打開</p>
          </div>
          <div id="gift-result" class="text-center">
-            <!-- Gift result will be injected here -->
-         </div>
+            </div>
+    </div>
+
+    <div id="blessings-container" class="hidden fixed top-0 left-0 w-full h-full bg-black z-50 flex-col justify-center items-center p-4">
+        <h2 id="blessings-title" class="text-3xl md:text-4xl font-bold mb-4 accent-color text-center">來自遠方的祝福</h2>
+        <div id="video-player-wrapper" class="w-full max-w-3xl aspect-video bg-black rounded-lg">
+            <video id="blessings-video" class="w-full h-full" controls>
+                </video>
+        </div>
+        <p id="video-playlist" class="text-gray-400 mt-2 h-6"></p>
+        <button id="close-blessings" class="absolute top-4 right-4 text-3xl text-white hover:text-gray-400">×</button>
     </div>
 
 
@@ -351,13 +351,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             // --- 密碼設定 ---
             // 請在這裡修改成你想設定的密碼
-            const PASSWORD = 'chen0927';
+            const PASSWORD = 'chen09';
             // --- 設定結束 ---
 
             // --- 開發設定 ---
             // 將此設定為 true 可以解鎖所有日期，方便測試與修改。
             // 正式發佈給對方前，請務必改回 false！
-            const UNLOCK_ALL_DATES = false;
+            const UNLOCK_ALL_DATES = true;
             // --- 設定結束 ---
             
             // --- 圖片路徑管理 ---
@@ -375,17 +375,22 @@
                 day25_5: 'image/day25_5.jpeg',
                 day25_6: 'image/day25_6.jpeg',
                 day25_7: 'image/day25_7.jpeg',
-                day28_photo: 'https://placehold.co/600x400/1b263b/e0e1dd?text=一年前的照片',
+                day28_photo: 'image/IMG_7781.jpeg',
                 day30_memory: 'https://placehold.co/600x400/1b263b/e0e1dd?text=福岡回憶',
                 giftBox: 'image/IMG_7617.jpeg'
             };
             // --- 圖片路徑結束 ---
             
-            // --- 連結管理 ---
+            // --- 連結與影片管理 ---
             const linkPaths = {
-                day19_video: 'https://www.youtube.com/embed/An_r_t_c2sU',
                 day7_spotify: 'https://open.spotify.com/playlist/4cIIUR6AHQsudqNdhOfQN2?si=i04RwpqoSXqXqRdjIf1tyg&pi=CXbAyX0zT-6J6',
-                day26_spotify: 'https://open.spotify.com/'
+                day26_spotify: 'https://open.spotify.com/',
+                // (新增的) 請在此處加入您所有祝福影片的路徑
+                day27_videos: [
+                    'recorder/0927_1.mp4',
+                    'recorder/0927_2.mp4',
+                    // 如果有更多影片，請繼續往下加，例如: 'recorder/0927_3.mp4',
+                ]
             };
             // --- 連結管理結束 ---
 
@@ -1122,7 +1127,18 @@
                 
                         // 開始播放
                         showNextImage(); // 立刻顯示第一張
-                        setInterval(showNextImage, 800); // 每 0.8 秒切換一張，您可以調整這個數字
+                        const slideshowInterval = setInterval(showNextImage, 800);
+                        
+                        // 當 modal 關閉時，停止輪播，避免背景繼續耗能
+                        const modal = document.getElementById('surprise-modal');
+                        const observer = new MutationObserver((mutations) => {
+                            mutations.forEach((mutation) => {
+                                if (mutation.attributeName === 'style' && modal.style.display === 'none') {
+                                    clearInterval(slideshowInterval);
+                                }
+                            });
+                        });
+                        observer.observe(modal, { attributes: true });
                     }
                 },
                 26: {
@@ -1170,6 +1186,12 @@
             const giftCloseButton = document.querySelector('#gift-reveal-container .close-button');
             const giftBoxImage = document.querySelector('#gift-box img');
             
+            // (新增的) 取得影片播放器相關元素
+            const blessingsContainer = document.getElementById('blessings-container');
+            const blessingsVideo = document.getElementById('blessings-video');
+            const closeBlessingsButton = document.getElementById('close-blessings');
+            const videoPlaylist = document.getElementById('video-playlist');
+
             // --- Apply Image Paths ---
             document.getElementById('landing-page').style.backgroundImage = `linear-gradient(rgba(13, 27, 42, 0.8), rgba(13, 27, 42, 1)), url('${imagePaths.landingBackground}')`;
             if (giftBoxImage) {
@@ -1212,6 +1234,7 @@
                 modal.style.display = 'none';
                 mondayContainer.style.display = 'none';
                 giftContainer.style.display = 'none';
+                closeBlessings(); // (新增的) 關閉 modal 時也關閉影片
             };
 
             modalCloseButton.addEventListener('click', closeModal);
@@ -1222,13 +1245,19 @@
                 if (event.target == modal || event.target == mondayContainer || event.target == giftContainer) {
                     closeModal();
                 }
+                if (event.target == blessingsContainer) { // 點擊影片背景也可以關閉
+                    closeBlessings();
+                }
             });
+            
             fireworksContainer.addEventListener('click', () => {
                 fireworksContainer.classList.add('hidden');
                 if (animationFrameId) {
                     window.cancelAnimationFrame(animationFrameId);
                     animationFrameId = null;
                 }
+                 // (新增的) 如果煙火被手動關閉，也直接顯示祝福影片
+                showBlessings();
             });
 
             // 產生日期卡片
@@ -1325,6 +1354,55 @@
                 }, 3000);
             }
 
+            // (新增的) 顯示祝福影片的函式
+            function showBlessings() {
+                // 如果沒有影片，就直接結束
+                if (!linkPaths.day27_videos || linkPaths.day27_videos.length === 0) {
+                    console.log("沒有設定祝福影片。");
+                    return;
+                }
+                
+                blessingsContainer.classList.remove('hidden');
+                blessingsContainer.style.display = 'flex';
+
+                let currentVideoIndex = 0;
+                const videoSources = linkPaths.day27_videos;
+
+                function playVideo(index) {
+                    if (index >= videoSources.length) {
+                        // 所有影片播放完畢
+                        videoPlaylist.textContent = "所有祝福已播放完畢！";
+                        setTimeout(closeBlessings, 2000); // 2秒後自動關閉
+                        return;
+                    }
+                    videoPlaylist.textContent = `正在播放祝福 ${index + 1} / ${videoSources.length}`;
+                    blessingsVideo.src = videoSources[index];
+                    blessingsVideo.play().catch(e => {
+                        console.error("影片播放失敗:", e);
+                        videoPlaylist.textContent = `影片 ${index + 1} 載入失敗，請檢查路徑。`;
+                    });
+                }
+                
+                // 移除舊的監聽器，避免重複綁定
+                const playNextVideo = () => {
+                    currentVideoIndex++;
+                    playVideo(currentVideoIndex);
+                };
+                blessingsVideo.removeEventListener('ended', playNextVideo); 
+                blessingsVideo.addEventListener('ended', playNextVideo);
+
+                playVideo(currentVideoIndex);
+            }
+            
+            // (新增的) 關閉祝福影片的函式
+            function closeBlessings() {
+                blessingsVideo.pause(); // 暫停影片
+                blessingsVideo.src = ""; // 清空來源，避免背景播放
+                blessingsContainer.style.display = 'none';
+            }
+            
+            closeBlessingsButton.addEventListener('click', closeBlessings);
+
             // --- 煙火特效邏輯 ---
             const ctx = canvas.getContext('2d');
             let fireworks = [];
@@ -1374,7 +1452,20 @@
 
                 setTimeout(() => {
                     birthdayTitle.style.opacity = 0;
-                    setTimeout(() => personalMessage.style.opacity = 1, 1500);
+                    setTimeout(() => {
+                        personalMessage.style.opacity = 1;
+
+                        // (修改的) 等待祝福語句顯示後，自動轉換到影片
+                        setTimeout(() => {
+                            fireworksContainer.classList.add('hidden');
+                            if (animationFrameId) {
+                                window.cancelAnimationFrame(animationFrameId);
+                                animationFrameId = null;
+                            }
+                            showBlessings(); // 呼叫播放祝福影片的函式
+                        }, 4000); // 訊息出現後等待 4 秒
+
+                    }, 1500);
                 }, 3500);
 
                 loop();
@@ -1479,4 +1570,3 @@
     </script>
 </body>
 </html>
-
